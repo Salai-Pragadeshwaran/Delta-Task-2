@@ -7,8 +7,12 @@ import android.view.Menu
 import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
+
 
 class MainActivity : AppCompatActivity() {
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +22,18 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
+        }
+
+        nPlus.setOnClickListener {
+            if(MyDrawView.n < 12){
+                MyDrawView.n++
+            }
+        }
+
+        nMinus.setOnClickListener {
+            if(MyDrawView.n > 3){
+                MyDrawView.n--
+            }
         }
     }
 
