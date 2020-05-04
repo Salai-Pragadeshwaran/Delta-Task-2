@@ -5,17 +5,29 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import static java.lang.Math.round;
+
 
 public class MyDrawView extends View {
-    public  static  int n = 3; // make this accessible for modification
+    public  static  int n = 5; // make this accessible for modification
     float canvasSize ;
     float dotRadius = 20 ;
     float gap ;
+    float centreX;
+    float centreY;
+    float x, y;
     Paint blackFill = new Paint();
+    Paint redS = new Paint();
+    boolean initialTouch = true ;
+    boolean drawLine = false ;
 
 
     public MyDrawView(Context context) {
@@ -43,6 +55,10 @@ public class MyDrawView extends View {
         blackFill.setColor(Color.BLACK);
         blackFill.setStyle(Paint.Style.FILL);
         blackFill.isAntiAlias();
+
+        redS.setColor(Color.RED);
+        redS.isAntiAlias();
+        redS.setStrokeWidth(10);
     }
 
     @Override
@@ -54,10 +70,82 @@ public class MyDrawView extends View {
 
         drawDots(canvas);
 
+        drawTheLine(canvas);
+
 
         postInvalidate();
     }
 
+    private void drawTheLine(Canvas canvas) {
+        if(drawLine){
+            if(centreX - x >= gap){
+                // draw line to left
+                canvas.drawLine(centreX, centreY, centreX - gap, centreY, redS);
+
+                initialTouch = true;
+                drawLine = false;
+
+            }
+            else if(-centreX + x >= gap){
+                //draw line to right
+                canvas.drawLine(centreX, centreY, centreX + gap, centreY, redS);
+
+                initialTouch = true;
+                drawLine = false;
+            }
+            else if(centreY - y >= gap){
+                //draw line to top
+                canvas.drawLine(centreX, centreY, centreX, centreY - gap, redS);
+
+                initialTouch = true;
+                drawLine = false;
+            }
+            else if(-centreY + y >= gap){
+                //draw line to bottom
+                canvas.drawLine(centreX, centreY, centreX, centreY + gap , redS);
+
+                initialTouch = true;
+                drawLine = false;
+            }
+        }
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean value = super.onTouchEvent(event);
+
+        switch (event.getAction()){
+
+            case MotionEvent.ACTION_MOVE:{
+                x = event.getX();
+                y = event.getY();
+
+                if(initialTouch){
+                    centreX = (round((x/gap))*gap);
+                    centreY = (round((y/gap))*gap);
+                    initialTouch = false;
+                    drawLine = true ;
+                }}
+
+            case MotionEvent.ACTION_DOWN: {
+                x = event.getX();
+                y = event.getY();
+
+                //find the closest 2 points and draw a line between them
+
+
+
+                return true ;
+            }
+
+        }
+
+
+
+        return value;
+
+    }
 
     private void drawDots(Canvas canvas){
         for(int i=1 ; i<= n ; i++){
