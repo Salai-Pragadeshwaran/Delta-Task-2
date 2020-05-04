@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,10 +14,15 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+
 import static java.lang.Math.round;
 
 
 public class MyDrawView extends View {
+
+    ArrayList<LinesList> linesLists = new ArrayList<LinesList>();
+
     public  static  int n = 5; // make this accessible for modification
     float canvasSize ;
     float dotRadius = 20 ;
@@ -58,6 +64,7 @@ public class MyDrawView extends View {
 
         redS.setColor(Color.RED);
         redS.isAntiAlias();
+        redS.setStyle(Paint.Style.STROKE);
         redS.setStrokeWidth(10);
     }
 
@@ -71,7 +78,8 @@ public class MyDrawView extends View {
         drawDots(canvas);
 
         drawTheLine(canvas);
-
+        drawAllLines(canvas, linesLists);
+        //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, redS);
 
         postInvalidate();
     }
@@ -80,34 +88,50 @@ public class MyDrawView extends View {
         if(drawLine){
             if(centreX - x >= gap){
                 // draw line to left
-                canvas.drawLine(centreX, centreY, centreX - gap, centreY, redS);
-
+               // canvas.drawLine(centreX, centreY, centreX - gap, centreY, redS);
+                linesLists.add(new LinesList(centreX, centreY, centreX - gap, centreY));
+               // lines.lineTo(centreX-gap, centreY);
                 initialTouch = true;
                 drawLine = false;
-
             }
             else if(-centreX + x >= gap){
                 //draw line to right
-                canvas.drawLine(centreX, centreY, centreX + gap, centreY, redS);
-
+               // canvas.drawLine(centreX, centreY, centreX + gap, centreY, redS);
+                linesLists.add(new LinesList(centreX, centreY, centreX + gap, centreY));
+                //lines.lineTo(centreX+gap, centreY);
                 initialTouch = true;
                 drawLine = false;
             }
             else if(centreY - y >= gap){
                 //draw line to top
-                canvas.drawLine(centreX, centreY, centreX, centreY - gap, redS);
-
+               // canvas.drawLine(centreX, centreY, centreX, centreY - gap, redS);
+                linesLists.add(new LinesList(centreX, centreY, centreX, centreY - gap));
+               // lines.lineTo(centreX, centreY - gap);
                 initialTouch = true;
                 drawLine = false;
             }
             else if(-centreY + y >= gap){
                 //draw line to bottom
-                canvas.drawLine(centreX, centreY, centreX, centreY + gap , redS);
-
+               // canvas.drawLine(centreX, centreY, centreX, centreY + gap , redS);
+                linesLists.add(new LinesList(centreX, centreY, centreX, centreY + gap));
+               // lines.lineTo(centreX, centreY + gap);
                 initialTouch = true;
                 drawLine = false;
+
             }
+
         }
+
+    }
+
+    private void drawAllLines(Canvas canvas , ArrayList<LinesList> linesList){
+        for(int i = 0 ; i < linesList.size(); i++){
+        canvas.drawLine(linesList.get(i).getX1(), linesList.get(i).getY1(), linesList.get(i).getX2(), linesList.get(i).getY2(), redS);
+        //lines.lineTo(linesList.get(i).getX2() , linesList.get(i).getY2());
+
+    }
+
+
     }
 
 
@@ -126,7 +150,10 @@ public class MyDrawView extends View {
                     centreY = (round((y/gap))*gap);
                     initialTouch = false;
                     drawLine = true ;
-                }}
+                }
+
+            return true ;
+            }
 
             case MotionEvent.ACTION_DOWN: {
                 x = event.getX();
