@@ -34,6 +34,7 @@ public class MyDrawView extends View {
     Paint redS = new Paint();
     boolean initialTouch = true ;
     boolean drawLine = false ;
+    boolean skipOnce = false ; // to avoid the unwanted line
 
 
     public MyDrawView(Context context) {
@@ -77,22 +78,24 @@ public class MyDrawView extends View {
 
         drawDots(canvas);
 
-        drawTheLine(canvas);
+        //drawTheLine(canvas);
         drawAllLines(canvas, linesLists);
         //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, redS);
 
         postInvalidate();
     }
 
-    private void drawTheLine(Canvas canvas) {
+    private void drawTheLine() {
         if(drawLine){
             if(centreX - x >= gap){
                 // draw line to left
                // canvas.drawLine(centreX, centreY, centreX - gap, centreY, redS);
-                linesLists.add(new LinesList(centreX, centreY, centreX - gap, centreY));
+             linesLists.add(new LinesList(centreX, centreY, centreX - gap, centreY));
                // lines.lineTo(centreX-gap, centreY);
                 initialTouch = true;
                 drawLine = false;
+                centreX = 0;
+                skipOnce = true;
             }
             else if(-centreX + x >= gap){
                 //draw line to right
@@ -101,6 +104,8 @@ public class MyDrawView extends View {
                 //lines.lineTo(centreX+gap, centreY);
                 initialTouch = true;
                 drawLine = false;
+                centreX = 0;
+                skipOnce = true;
             }
             else if(centreY - y >= gap){
                 //draw line to top
@@ -109,6 +114,8 @@ public class MyDrawView extends View {
                // lines.lineTo(centreX, centreY - gap);
                 initialTouch = true;
                 drawLine = false;
+                centreX = 0;
+                skipOnce = true;
             }
             else if(-centreY + y >= gap){
                 //draw line to bottom
@@ -117,7 +124,8 @@ public class MyDrawView extends View {
                // lines.lineTo(centreX, centreY + gap);
                 initialTouch = true;
                 drawLine = false;
-
+                centreX = 0;
+                skipOnce = true;
             }
 
         }
@@ -144,8 +152,13 @@ public class MyDrawView extends View {
             case MotionEvent.ACTION_MOVE:{
                 x = event.getX();
                 y = event.getY();
-
+                if(centreX!=0) {
+                    drawTheLine();
+                }
                 if(initialTouch){
+                    if(skipOnce){
+                        return true;
+                    }
                     centreX = (round((x/gap))*gap);
                     centreY = (round((y/gap))*gap);
                     initialTouch = false;
@@ -158,6 +171,7 @@ public class MyDrawView extends View {
             case MotionEvent.ACTION_DOWN: {
                 x = event.getX();
                 y = event.getY();
+                skipOnce = false;
 
                 //find the closest 2 points and draw a line between them
 
