@@ -21,7 +21,7 @@ import static java.lang.Math.round;
 
 public class MyDrawView extends View {
 
-    ArrayList<LinesList> linesLists = new ArrayList<LinesList>();
+    public static ArrayList<LinesList> linesLists = new ArrayList<LinesList>();
 
     public  static  int n = 5; // make this accessible for modification
     float canvasSize ;
@@ -32,6 +32,7 @@ public class MyDrawView extends View {
     float x, y;
     Paint blackFill = new Paint();
     Paint redS = new Paint();
+    Paint blueS = new Paint();
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
@@ -67,6 +68,11 @@ public class MyDrawView extends View {
         redS.isAntiAlias();
         redS.setStyle(Paint.Style.STROKE);
         redS.setStrokeWidth(10);
+
+        blueS.setColor(Color.BLUE);
+        blueS.isAntiAlias();
+        blueS.setStyle(Paint.Style.STROKE);
+        blueS.setStrokeWidth(10);
     }
 
     @Override
@@ -74,14 +80,11 @@ public class MyDrawView extends View {
         canvasSize = canvas.getHeight() ;
         gap = canvasSize/(n+1);
         canvas.drawColor(Color.GRAY);
-
-
-        drawDots(canvas);
-
         //drawTheLine(canvas);
         drawAllLines(canvas, linesLists);
         //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, redS);
 
+        drawDots(canvas);
         postInvalidate();
     }
 
@@ -133,9 +136,16 @@ public class MyDrawView extends View {
     }
 
     private void drawAllLines(Canvas canvas , ArrayList<LinesList> linesList){
+        boolean firstPlayerTurn = true;
         for(int i = 0 ; i < linesList.size(); i++){
-        canvas.drawLine(linesList.get(i).getX1(), linesList.get(i).getY1(), linesList.get(i).getX2(), linesList.get(i).getY2(), redS);
+        canvas.drawLine(linesList.get(i).getX1(), linesList.get(i).getY1(), linesList.get(i).getX2(), linesList.get(i).getY2(), (firstPlayerTurn)? redS : blueS);
         //lines.lineTo(linesList.get(i).getX2() , linesList.get(i).getY2());
+            if (firstPlayerTurn){
+                firstPlayerTurn = false;
+            }
+            else{
+                firstPlayerTurn = true;
+            }
 
     }
 

@@ -20,19 +20,23 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                .setAction("Action", null).show()
+           var size =  MyDrawView.linesLists.size
+            MyDrawView.linesLists.removeAt(size-1)
         }
 
         nPlus.setOnClickListener {
             if(MyDrawView.n < 12){
                 MyDrawView.n++
+                MyDrawView.linesLists.clear();
             }
         }
 
         nMinus.setOnClickListener {
             if(MyDrawView.n > 3){
                 MyDrawView.n--
+                MyDrawView.linesLists.clear();
             }
         }
     }
