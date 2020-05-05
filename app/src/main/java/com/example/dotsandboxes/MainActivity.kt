@@ -5,6 +5,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -23,8 +24,11 @@ class MainActivity : AppCompatActivity() {
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                .setAction("Action", null).show()
            var size =  MyDrawView.linesLists.size
-            MyDrawView.linesLists.removeAt(size-1)
+            if(size>0) {
+                MyDrawView.linesLists.removeAt(size - 1)
+            }
         }
+
 
         nPlus.setOnClickListener {
             if(MyDrawView.n < 12){
@@ -56,4 +60,5 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }
