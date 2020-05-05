@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import java.util.ArrayList;
 
 import static java.lang.Math.round;
@@ -30,9 +28,12 @@ public class MyDrawView extends View {
     float centreX;
     float centreY;
     float x, y;
+    float padding = 10 ;
     Paint blackFill = new Paint();
     Paint redS = new Paint();
     Paint blueS = new Paint();
+    Paint redRectS = new Paint();
+    Paint blueRectS = new Paint();
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
@@ -69,6 +70,14 @@ public class MyDrawView extends View {
         redS.setStyle(Paint.Style.STROKE);
         redS.setStrokeWidth(10);
 
+        redRectS.setColor(Color.RED);
+        redRectS.isAntiAlias();
+        redS.setStyle(Paint.Style.FILL);
+
+        blueRectS.setColor(Color.BLUE);
+        blueRectS.isAntiAlias();
+        blueRectS.setStyle(Paint.Style.FILL);
+
         blueS.setColor(Color.BLUE);
         blueS.isAntiAlias();
         blueS.setStyle(Paint.Style.STROKE);
@@ -92,54 +101,124 @@ public class MyDrawView extends View {
         if(drawLine){
             if(centreX - x >= gap){
                 // draw line to left
-               // canvas.drawLine(centreX, centreY, centreX - gap, centreY, redS);
-             linesLists.add(new LinesList(centreX, centreY, centreX - gap, centreY));
-               // lines.lineTo(centreX-gap, centreY);
-                initialTouch = true;
-                drawLine = false;
-                centreX = 0;
-                skipOnce = true;
+             linesLists.add(new LinesList(centreX, centreY, centreX - gap, centreY, 0));
+                commonDrawTheLine();
             }
             else if(-centreX + x >= gap){
                 //draw line to right
-               // canvas.drawLine(centreX, centreY, centreX + gap, centreY, redS);
-                linesLists.add(new LinesList(centreX, centreY, centreX + gap, centreY));
-                //lines.lineTo(centreX+gap, centreY);
-                initialTouch = true;
-                drawLine = false;
-                centreX = 0;
-                skipOnce = true;
+                linesLists.add(new LinesList(centreX, centreY, centreX + gap, centreY, 0));
+                commonDrawTheLine();
             }
             else if(centreY - y >= gap){
                 //draw line to top
-               // canvas.drawLine(centreX, centreY, centreX, centreY - gap, redS);
-                linesLists.add(new LinesList(centreX, centreY, centreX, centreY - gap));
-               // lines.lineTo(centreX, centreY - gap);
-                initialTouch = true;
-                drawLine = false;
-                centreX = 0;
-                skipOnce = true;
+                linesLists.add(new LinesList(centreX, centreY, centreX, centreY - gap,
+                        checkBox(centreX, centreY, centreX, centreY - gap)));
+                commonDrawTheLine();
             }
             else if(-centreY + y >= gap){
                 //draw line to bottom
-               // canvas.drawLine(centreX, centreY, centreX, centreY + gap , redS);
-                linesLists.add(new LinesList(centreX, centreY, centreX, centreY + gap));
-               // lines.lineTo(centreX, centreY + gap);
-                initialTouch = true;
-                drawLine = false;
-                centreX = 0;
-                skipOnce = true;
+
+                linesLists.add(new LinesList(centreX, centreY, centreX, centreY + gap ,
+                        checkBox(centreX, centreY, centreX, centreY + gap)));
+               commonDrawTheLine();
             }
 
         }
 
     }
 
+    private int checkBox(float x1 , float y1, float x2, float y2) {
+        int dir = 0 ;
+        boolean a = searchIfPresent(linesLists, x1, y1, x1 + gap, y1);
+        boolean b = searchIfPresent(linesLists, x1 + gap, y1, x2+gap, y2);
+        boolean c = searchIfPresent(linesLists, x2, y2, x2+gap, y2);
+        if(a && b && c ){
+            // box on right
+            Toast.makeText(getContext(), "right", Toast.LENGTH_LONG).show();
+            dir = 3;
+        }
+        a = searchIfPresent(linesLists, x1, y1, x1 - gap, y1);
+        b = searchIfPresent(linesLists, x1 - gap, y1, x2-gap, y2);
+        c = searchIfPresent(linesLists, x2, y2, x2-gap, y2);
+        if(a && b && c ){
+            // box on left
+            Toast.makeText(getContext(), "left", Toast.LENGTH_LONG).show();
+            if(dir==3){
+                dir = 39;
+            }
+            else {
+                dir = 9;
+            }
+        }
+
+        return dir;
+    }
+
+    private void commonDrawTheLine (){
+        initialTouch = true;
+        drawLine = false;
+        centreX = 0;
+        skipOnce = true;
+    }
+
+
     private void drawAllLines(Canvas canvas , ArrayList<LinesList> linesList){
         boolean firstPlayerTurn = true;
         for(int i = 0 ; i < linesList.size(); i++){
         canvas.drawLine(linesList.get(i).getX1(), linesList.get(i).getY1(), linesList.get(i).getX2(), linesList.get(i).getY2(), (firstPlayerTurn)? redS : blueS);
         //lines.lineTo(linesList.get(i).getX2() , linesList.get(i).getY2());
+
+        switch (linesList.get(i).getDirection()){
+            case 3 : {
+                if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
+                    canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
+                            linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
+                            (firstPlayerTurn)? redRectS : blueRectS );
+                }
+                else {
+                    canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
+                            linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
+                            (firstPlayerTurn)? redRectS : blueRectS );
+                }
+                break;
+            }
+            case 9 : {
+                if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
+                    canvas.drawRect(linesList.get(i).getX2() - padding, linesList.get(i).getY2() + padding,
+                            linesList.get(i).getX2() - gap + padding, linesList.get(i).getY2() + gap - padding,
+                            (firstPlayerTurn)? redRectS : blueRectS );
+                }
+                else {
+                    canvas.drawRect(linesList.get(i).getX1() - padding, linesList.get(i).getY1() + padding,
+                            linesList.get(i).getX1() - gap + padding, linesList.get(i).getY1() + gap - padding,
+                            (firstPlayerTurn)? redRectS : blueRectS );
+                }
+                break;
+            }
+            case 39 : {
+                if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
+                    canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
+                            linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
+                            (firstPlayerTurn)? redRectS : blueRectS );
+                    canvas.drawRect(linesList.get(i).getX2() - padding, linesList.get(i).getY2() + padding,
+                            linesList.get(i).getX2() - gap + padding, linesList.get(i).getY2() + gap - padding,
+                            (firstPlayerTurn)? redRectS : blueRectS );
+                }
+                else {
+                    canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
+                            linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
+                            (firstPlayerTurn)? redRectS : blueRectS );
+                    canvas.drawRect(linesList.get(i).getX1() - padding, linesList.get(i).getY1() + padding,
+                            linesList.get(i).getX1() - gap + padding, linesList.get(i).getY1() + gap - padding,
+                            (firstPlayerTurn)? redRectS : blueRectS );
+                }
+                break;
+            }
+            default:{
+                break;
+            }
+        }
+
             if (firstPlayerTurn){
                 firstPlayerTurn = false;
             }
@@ -204,5 +283,20 @@ public class MyDrawView extends View {
                 canvas.drawCircle(i*gap, j*gap , dotRadius, blackFill );
             }
         }
+    }
+
+
+    public boolean searchIfPresent(ArrayList<LinesList> linesLists  ,float x1 , float y1 , float x2 , float y2) {
+        for (int i = 0; i < linesLists.size(); i++) {
+            if ((linesLists.get(i).getX1() == x1) && (linesLists.get(i).getY1() == y1) &&
+                    (linesLists.get(i).getX2() == x2) && (linesLists.get(i).getY2() == y2)) {
+                return true;
+            }
+            if ((linesLists.get(i).getX1() == x2) && (linesLists.get(i).getY1() == y2) &&
+                    (linesLists.get(i).getX2() == x1) && (linesLists.get(i).getY2() == y1)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
