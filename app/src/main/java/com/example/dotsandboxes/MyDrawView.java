@@ -5,6 +5,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,7 +41,7 @@ public class MyDrawView extends View {
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
-    MediaPlayer song = MediaPlayer.create(getContext(), R.raw.click2);
+    MediaPlayer clickSound = MediaPlayer.create(getContext(), R.raw.click2);
 
 
     public MyDrawView(Context context) {
@@ -142,7 +145,11 @@ public class MyDrawView extends View {
         if(searchIfPresent(linesLists, x1, y1, x2, y2)){ // to avoid redrawing of lines
             return -1;
         }
+        if(checkLineBorder(x1, y1, x2, y2)){
+            return -1;
+        }
 
+        clickSound.start();
         if(x1 == x2) {
             float yy1 = (y1<y2)? y1 : y2;
             float xx1 = (yy1==y1)? x1 : x2;
@@ -202,8 +209,6 @@ public class MyDrawView extends View {
         drawLine = false;
         centreX = 0;
         skipOnce = true;
-
-        song.start();
     }
 
 
@@ -211,7 +216,7 @@ public class MyDrawView extends View {
         boolean firstPlayerTurn = true;
         int scorea = 0;
         int scoreb = 0;
-        if(linesList.size()>1) {
+        if(linesList.size()>=1) {
 
             if (linesList.get(linesList.size() - 1).getDirection() == -1) {
                 linesList.remove(linesList.size() - 1); // removes overdrawn line
@@ -349,11 +354,17 @@ public class MyDrawView extends View {
             }
     }
         if(scorea!=scoreA) {
+            if(scorea>scoreA){
+                vibrate();
+            }
             scoreA = scorea;
             TextView txtView = (TextView) ((MainActivity)getContext()).findViewById(R.id.scoreViewA);
             txtView.setText(""+scoreA);
         }
         if(scoreb!=scoreB) {
+            if(scoreb>scoreB){
+                vibrate();
+            }
             scoreB = scoreb;
             TextView txtView = (TextView) ((MainActivity)getContext()).findViewById(R.id.scoreViewB);
             txtView.setText(""+scoreB);
@@ -428,4 +439,25 @@ public class MyDrawView extends View {
         }
         return false;
     }
+
+    public boolean checkLineBorder(float x1 , float y1 , float x2 , float y2){
+        if((x1==0)||(x2==0)||(y1==0)||(y2==0)||(x1==((n+1)*gap))||(x2==((n+1)*gap))||(y1==((n+1)*gap))||(y2==((n+1)*gap))){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public void vibrate(){
+        Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+// Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(200);
+        }
+    }
+
 }
