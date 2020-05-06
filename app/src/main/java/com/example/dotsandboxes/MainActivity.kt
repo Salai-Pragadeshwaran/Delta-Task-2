@@ -30,19 +30,8 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        nPlus.setOnClickListener {
-            if(MyDrawView.n < 12){
-                MyDrawView.n++
-                MyDrawView.linesLists.clear();
-            }
-        }
 
-        nMinus.setOnClickListener {
-            if(MyDrawView.n > 3){
-                MyDrawView.n--
-                MyDrawView.linesLists.clear();
-            }
-        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -52,11 +41,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
+            R.id.gridPlus -> {
+                if(MyDrawView.n < 12){
+                    MyDrawView.n++
+                    MyDrawView.linesLists.clear();
+                }
+                return true
+            }
+            R.id.gridMinus -> {
+                if(MyDrawView.n > 3){
+                    MyDrawView.n--
+                    MyDrawView.linesLists.clear();
+                }
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

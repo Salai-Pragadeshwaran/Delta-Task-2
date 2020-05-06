@@ -3,4 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="canvasBg">#000000</color>
+    <color name="dots">#FFFFFF</color>
+    <color name="lineA">#FF6D00</color>
+    <color name="lineB">#64DD17</color>
+    <color name="boxA">#EF6C00</color>
+    <color name="boxB">#558B2F</color>
 </resources>

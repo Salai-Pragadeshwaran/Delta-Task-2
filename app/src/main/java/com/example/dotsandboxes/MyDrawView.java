@@ -1,15 +1,14 @@
 package com.example.dotsandboxes;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
+import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -31,14 +30,15 @@ public class MyDrawView extends View {
     float centreY;
     float x, y;
     float padding = 10 ;
-    Paint blackFill = new Paint();
-    Paint redS = new Paint();
-    Paint blueS = new Paint();
-    Paint redRectS = new Paint();
-    Paint blueRectS = new Paint();
+    Paint dotsPaint = new Paint();
+    Paint lineA = new Paint();
+    Paint lineB = new Paint();
+    Paint boxA = new Paint();
+    Paint boxB = new Paint();
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
+    MediaPlayer song = MediaPlayer.create(getContext(), R.raw.click2);
 
 
     public MyDrawView(Context context) {
@@ -62,41 +62,42 @@ public class MyDrawView extends View {
         init(attrs);
     }
 
+    @SuppressLint("ResourceAsColor")
     private void init(@Nullable AttributeSet set){
         scoreA = 0;
         scoreB = 0;
 
-        blackFill.setColor(Color.BLACK);
-        blackFill.setStyle(Paint.Style.FILL);
-        blackFill.isAntiAlias();
+        dotsPaint.setColor(getResources().getColor(R.color.dots));
+        dotsPaint.setStyle(Paint.Style.FILL);
+        dotsPaint.isAntiAlias();
 
-        redS.setColor(Color.RED);
-        redS.isAntiAlias();
-        redS.setStyle(Paint.Style.STROKE);
-        redS.setStrokeWidth(10);
+        lineA.setColor(getResources().getColor(R.color.lineA));
+        lineA.isAntiAlias();
+        lineA.setStyle(Paint.Style.STROKE);
+        lineA.setStrokeWidth(10);
 
-        redRectS.setColor(Color.RED);
-        redRectS.isAntiAlias();
-        redS.setStyle(Paint.Style.FILL);
+        boxA.setColor(getResources().getColor(R.color.boxA));
+        boxA.isAntiAlias();
+        lineA.setStyle(Paint.Style.FILL);
 
-        blueRectS.setColor(Color.BLUE);
-        blueRectS.isAntiAlias();
-        blueRectS.setStyle(Paint.Style.FILL);
+        boxB.setColor(getResources().getColor(R.color.boxB));
+        boxB.isAntiAlias();
+        boxB.setStyle(Paint.Style.FILL);
 
-        blueS.setColor(Color.BLUE);
-        blueS.isAntiAlias();
-        blueS.setStyle(Paint.Style.STROKE);
-        blueS.setStrokeWidth(10);
+        lineB.setColor(getResources().getColor(R.color.lineB));
+        lineB.isAntiAlias();
+        lineB.setStyle(Paint.Style.STROKE);
+        lineB.setStrokeWidth(10);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         canvasSize = canvas.getHeight() ;
-        gap = canvasSize/(n+1);
-        canvas.drawColor(Color.GRAY);
+        gap = round(canvasSize/(n+1));
+        canvas.drawColor(getResources().getColor(R.color.canvasBg));
         //drawTheLine(canvas);
         drawAllLines(canvas, linesLists);
-        //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, redS);
+        //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
 
         drawDots(canvas);
         postInvalidate();
@@ -143,17 +144,19 @@ public class MyDrawView extends View {
         }
 
         if(x1 == x2) {
-            a = searchIfPresent(linesLists, x1, y1, x1 + gap, y1);
-            b = searchIfPresent(linesLists, x1 + gap, y1, x2 + gap, y2);
-            c = searchIfPresent(linesLists, x2, y2, x2 + gap, y2);
+            float yy1 = (y1<y2)? y1 : y2;
+            float xx1 = (yy1==y1)? x1 : x2;
+            a = searchIfPresent(linesLists, xx1, yy1, xx1 + gap, yy1);
+            b = searchIfPresent(linesLists, xx1 + gap, yy1, xx1 + gap, yy1 +gap);
+            c = searchIfPresent(linesLists, xx1 + gap, yy1 +gap, x1, yy1 +gap);
             if (a && b && c) {
                 // box on right
                 //Toast.makeText(getContext(), "right", Toast.LENGTH_SHORT).show();
                 dir = 3;
             }
-            a = searchIfPresent(linesLists, x1, y1, x1 - gap, y1);
-            b = searchIfPresent(linesLists, x1 - gap, y1, x2 - gap, y2);
-            c = searchIfPresent(linesLists, x2, y2, x2 - gap, y2);
+            a = searchIfPresent(linesLists, xx1, yy1, xx1 - gap, yy1);
+            b = searchIfPresent(linesLists, xx1 - gap, yy1, xx1 - gap, yy1+gap);
+            c = searchIfPresent(linesLists, xx1 - gap, yy1 + gap, xx1, yy1 +gap );
             if (a && b && c) {
                 // box on left
                 //Toast.makeText(getContext(), "left", Toast.LENGTH_SHORT).show();
@@ -165,20 +168,22 @@ public class MyDrawView extends View {
             }
         }
         else{
-            a = searchIfPresent(linesLists, x1, y1, x1, y1-gap);
-            b = searchIfPresent(linesLists, x1, y1 - gap, x1+gap, y1-gap);
-            d = searchIfPresent(linesLists, x1, y1 - gap, x1-gap, y1-gap);
-            c = searchIfPresent(linesLists, x2, y2, x2, y2-gap);
-            if (a && (b||d) && c) {
+            float xx1 = (x1<x2)? x1 : x2;
+            float yy1 = (xx1==x1)? y1 : y2;
+            a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1-gap);
+            b = searchIfPresent(linesLists, xx1, yy1 - gap, xx1+gap, yy1-gap);
+            //d = searchIfPresent(linesLists, x1, y1 - gap, x1-gap, y1-gap);
+            c = searchIfPresent(linesLists, xx1 + gap, yy1 - gap, xx1 + gap, yy1);
+            if (a && b && c) {
                 // box on top
                 //Toast.makeText(getContext(), "top", Toast.LENGTH_SHORT).show();
                 dir = 12;
             }
-            a = searchIfPresent(linesLists, x1, y1, x1, y1 +gap);
-            b = searchIfPresent(linesLists, x1, y1+gap, x1+gap, y1+gap);
-            d = searchIfPresent(linesLists, x1, y1 + gap, x1-gap, y1+gap);
-            c = searchIfPresent(linesLists, x2, y2, x2, y2 +gap);
-            if (a && (b||d) && c) {
+            a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 +gap);
+            b = searchIfPresent(linesLists, xx1, yy1+gap, xx1+gap, yy1+gap);
+           // d = searchIfPresent(linesLists, x1, y1 + gap, x1-gap, y1+gap);
+            c = searchIfPresent(linesLists, xx1+gap, yy1 + gap, xx1 + gap, yy1);
+            if (a && b && c) {
                 // box on bottom
                 //Toast.makeText(getContext(), "bottom", Toast.LENGTH_SHORT).show();
                 if (dir == 12) {
@@ -197,6 +202,8 @@ public class MyDrawView extends View {
         drawLine = false;
         centreX = 0;
         skipOnce = true;
+
+        song.start();
     }
 
 
@@ -211,7 +218,7 @@ public class MyDrawView extends View {
             }
         }
         for(int i = 0 ; i < linesList.size(); i++){
-        canvas.drawLine(linesList.get(i).getX1(), linesList.get(i).getY1(), linesList.get(i).getX2(), linesList.get(i).getY2(), (firstPlayerTurn)? redS : blueS);
+        canvas.drawLine(linesList.get(i).getX1(), linesList.get(i).getY1(), linesList.get(i).getX2(), linesList.get(i).getY2(), (firstPlayerTurn)? lineA : lineB);
         //lines.lineTo(linesList.get(i).getX2() , linesList.get(i).getY2());
 
         switch (linesList.get(i).getDirection()){
@@ -219,12 +226,12 @@ public class MyDrawView extends View {
                 if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 if(firstPlayerTurn)
                     scorea++;
@@ -236,12 +243,12 @@ public class MyDrawView extends View {
                 if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
                     canvas.drawRect(linesList.get(i).getX2() - padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() - gap + padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() - padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() - gap + padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 if(firstPlayerTurn)
                     scorea++;
@@ -253,18 +260,18 @@ public class MyDrawView extends View {
                 if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                     canvas.drawRect(linesList.get(i).getX2() - padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() - gap + padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                     canvas.drawRect(linesList.get(i).getX1() - padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() - gap + padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 if(firstPlayerTurn)
                     scorea+=2;
@@ -276,12 +283,12 @@ public class MyDrawView extends View {
                 if(linesList.get(i).getX1() > linesList.get(i).getX2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() - padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() - gap + padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() - padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() - gap + padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 if(firstPlayerTurn)
                     scorea++;
@@ -293,12 +300,12 @@ public class MyDrawView extends View {
                 if(linesList.get(i).getX1() > linesList.get(i).getX2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 if(firstPlayerTurn)
                     scorea++;
@@ -310,18 +317,18 @@ public class MyDrawView extends View {
                 if(linesList.get(i).getX1() > linesList.get(i).getX2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() - padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() - gap + padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() - padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() - gap + padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? redRectS : blueRectS );
+                            (firstPlayerTurn)? boxA : boxB);
                 }
                 if(firstPlayerTurn)
                     scorea+=2;
@@ -333,14 +340,13 @@ public class MyDrawView extends View {
                 break;
             }
         }
-
-            if (firstPlayerTurn){
-                firstPlayerTurn = false;
+            if (linesList.get(i).getDirection() == 0) {
+                if (firstPlayerTurn) {
+                    firstPlayerTurn = false;
+                } else {
+                    firstPlayerTurn = true;
+                }
             }
-            else{
-                firstPlayerTurn = true;
-            }
-
     }
         if(scorea!=scoreA) {
             scoreA = scorea;
@@ -403,7 +409,7 @@ public class MyDrawView extends View {
     private void drawDots(Canvas canvas){
         for(int i=1 ; i<= n ; i++){
             for(int j=1 ; j<= n ; j++){
-                canvas.drawCircle(i*gap, j*gap , dotRadius, blackFill );
+                canvas.drawCircle(i*gap, j*gap , dotRadius, dotsPaint);
             }
         }
     }
