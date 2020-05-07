@@ -17,4 +17,8 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="Score" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

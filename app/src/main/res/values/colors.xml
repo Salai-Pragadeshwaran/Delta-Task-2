@@ -7,6 +7,10 @@
     <color name="dots">#FFFFFF</color>
     <color name="lineA">#FF6D00</color>
     <color name="lineB">#64DD17</color>
+    <color name="lineC">#D50000</color>
+    <color name="lineD">#AA00FF</color>
     <color name="boxA">#EF6C00</color>
     <color name="boxB">#558B2F</color>
+    <color name="boxC">#B71C1C</color>
+    <color name="boxD">#4A148C</color>
 </resources>

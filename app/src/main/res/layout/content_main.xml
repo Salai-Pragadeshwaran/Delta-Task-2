@@ -9,6 +9,7 @@
     tools:showIn="@layout/activity_main">
 
     <com.example.dotsandboxes.MyDrawView
+        android:id="@+id/myDrawView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -19,55 +20,134 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/scoreViewA"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="50dp"
-        android:text="0"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
-        android:textColor="@color/boxA"
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/myDrawView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/scoreViewB"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="16dp"
-        android:text="0"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
-        android:textColor="@color/boxB"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.75"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:id="@+id/score1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Score A"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/boxA"
-        app:layout_constraintBottom_toTopOf="@+id/scoreViewA"
-        app:layout_constraintEnd_toEndOf="@+id/scoreViewA"
-        app:layout_constraintStart_toStartOf="@+id/scoreViewA" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="Score A"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/boxA" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Score B"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/boxB"
-        app:layout_constraintBottom_toTopOf="@+id/scoreViewB"
-        app:layout_constraintEnd_toEndOf="@+id/scoreViewB"
-        app:layout_constraintStart_toStartOf="@+id/scoreViewB" />
+            <TextView
+                android:id="@+id/scoreViewA"
+                style="@style/Score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="0"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+                android:textColor="@color/boxA" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/score2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="Score B"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/boxB" />
+
+            <TextView
+                android:id="@+id/scoreViewB"
+                style="@style/Score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="0"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+                android:textColor="@color/boxB" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/score3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="Score C"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/boxC" />
+
+            <TextView
+                android:id="@+id/scoreViewC"
+                style="@style/Score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="0"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+                android:textColor="@color/boxC" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/score4"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="Score D"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/boxD" />
+
+            <TextView
+                android:id="@+id/scoreViewD"
+                style="@style/Score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="0"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+                android:textColor="@color/boxD" />
+        </LinearLayout>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

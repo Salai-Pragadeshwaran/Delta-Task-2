@@ -5,6 +5,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,6 +20,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        score3.visibility = View.GONE
+        score4.visibility = View.GONE
 
         fab.setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -50,15 +54,36 @@ class MainActivity : AppCompatActivity() {
             R.id.gridPlus -> {
                 if(MyDrawView.n < 12){
                     MyDrawView.n++
-                    MyDrawView.linesLists.clear();
+                    MyDrawView.linesLists.clear()
                 }
                 return true
             }
             R.id.gridMinus -> {
                 if(MyDrawView.n > 3){
                     MyDrawView.n--
-                    MyDrawView.linesLists.clear();
+                    MyDrawView.linesLists.clear()
                 }
+                return true
+            }
+            R.id.player2 -> {
+                score3.visibility = View.GONE
+                score4.visibility = View.GONE
+                MyDrawView.linesLists.clear()
+                MyDrawView.playerNumber = 2
+                return true
+            }
+            R.id.player3 -> {
+                score3.visibility = View.VISIBLE
+                score4.visibility = View.GONE
+                MyDrawView.linesLists.clear()
+                MyDrawView.playerNumber = 3
+                return true
+            }
+            R.id.player4 -> {
+                score3.visibility = View.VISIBLE
+                score4.visibility = View.VISIBLE
+                MyDrawView.linesLists.clear()
+                MyDrawView.playerNumber = 4
                 return true
             }
             else -> super.onOptionsItemSelected(item)

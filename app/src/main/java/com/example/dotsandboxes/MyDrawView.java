@@ -24,8 +24,11 @@ public class MyDrawView extends View {
 
     public static ArrayList<LinesList> linesLists = new ArrayList<LinesList>();
     public static  int n = 5; // make this accessible for modification
+    public static int playerNumber = 2;
     public static int scoreA ;
     public static int scoreB ;
+    public static int scoreC ;
+    public static int scoreD ;
     float canvasSize ;
     float dotRadius = 20 ;
     float gap ;
@@ -36,8 +39,12 @@ public class MyDrawView extends View {
     Paint dotsPaint = new Paint();
     Paint lineA = new Paint();
     Paint lineB = new Paint();
+    Paint lineC = new Paint();
+    Paint lineD = new Paint();
     Paint boxA = new Paint();
     Paint boxB = new Paint();
+    Paint boxC = new Paint();
+    Paint boxD = new Paint();
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
@@ -83,14 +90,37 @@ public class MyDrawView extends View {
         boxA.isAntiAlias();
         lineA.setStyle(Paint.Style.FILL);
 
-        boxB.setColor(getResources().getColor(R.color.boxB));
-        boxB.isAntiAlias();
-        boxB.setStyle(Paint.Style.FILL);
-
         lineB.setColor(getResources().getColor(R.color.lineB));
         lineB.isAntiAlias();
         lineB.setStyle(Paint.Style.STROKE);
         lineB.setStrokeWidth(10);
+
+        boxB.setColor(getResources().getColor(R.color.boxB));
+        boxB.isAntiAlias();
+        boxB.setStyle(Paint.Style.FILL);
+
+
+            scoreC =0;
+            lineC.setColor(getResources().getColor(R.color.lineC));
+            lineC.isAntiAlias();
+            lineC.setStyle(Paint.Style.STROKE);
+            lineC.setStrokeWidth(10);
+
+            boxC.setColor(getResources().getColor(R.color.boxC));
+            boxC.isAntiAlias();
+            boxC.setStyle(Paint.Style.FILL);
+
+
+            scoreD = 0;
+            lineD.setColor(getResources().getColor(R.color.lineD));
+            lineD.isAntiAlias();
+            lineD.setStyle(Paint.Style.STROKE);
+            lineD.setStrokeWidth(10);
+
+            boxD.setColor(getResources().getColor(R.color.boxD));
+            boxD.isAntiAlias();
+            boxD.setStyle(Paint.Style.FILL);
+
     }
 
     @Override
@@ -140,7 +170,7 @@ public class MyDrawView extends View {
 
     private int checkBox(float x1 , float y1, float x2, float y2) {
         int dir = 0 ;
-        boolean a, b, c, d;
+        boolean a, b, c;
 
         if(searchIfPresent(linesLists, x1, y1, x2, y2)){ // to avoid redrawing of lines
             return -1;
@@ -213,9 +243,11 @@ public class MyDrawView extends View {
 
 
     private void drawAllLines(Canvas canvas , ArrayList<LinesList> linesList){
-        boolean firstPlayerTurn = true;
         int scorea = 0;
         int scoreb = 0;
+        int scorec = 0;
+        int scored = 0;
+        int turn = 0 ;
         if(linesList.size()>=1) {
 
             if (linesList.get(linesList.size() - 1).getDirection() == -1) {
@@ -223,135 +255,220 @@ public class MyDrawView extends View {
             }
         }
         for(int i = 0 ; i < linesList.size(); i++){
-        canvas.drawLine(linesList.get(i).getX1(), linesList.get(i).getY1(), linesList.get(i).getX2(), linesList.get(i).getY2(), (firstPlayerTurn)? lineA : lineB);
-        //lines.lineTo(linesList.get(i).getX2() , linesList.get(i).getY2());
+        canvas.drawLine(linesList.get(i).getX1(), linesList.get(i).getY1(), linesList.get(i).getX2(), linesList.get(i).getY2(), linePaint(turn));
+        turn++;
 
         switch (linesList.get(i).getDirection()){
             case 3 : {
+                turn--;
                 if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
-                if(firstPlayerTurn)
-                    scorea++;
-                else
-                    scoreb++;
+                switch (turn%playerNumber){
+                    case 0:{
+                        scorea++;
+                        break;
+                    }
+                    case 1:{
+                        scoreb++;
+                        break;
+                    }
+                    case 2:{
+                        scorec++;
+                        break;
+                    }
+                    case 3:{
+                        scored++;
+                        break;
+                    }
+                }
+
                 break;
             }
             case 9 : {
+                turn--;
                 if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
                     canvas.drawRect(linesList.get(i).getX2() - padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() - gap + padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() - padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() - gap + padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
-                if(firstPlayerTurn)
-                    scorea++;
-                else
-                    scoreb++;
+                switch (turn%playerNumber){
+                    case 0:{
+                        scorea++;
+                        break;
+                    }
+                    case 1:{
+                        scoreb++;
+                        break;
+                    }
+                    case 2:{
+                        scorec++;
+                        break;
+                    }
+                    case 3:{
+                        scored++;
+                        break;
+                    }
+                }
                 break;
             }
             case 39 : {
+                turn--;
                 if(linesList.get(i).getY1() > linesList.get(i).getY2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                     canvas.drawRect(linesList.get(i).getX2() - padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() - gap + padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                     canvas.drawRect(linesList.get(i).getX1() - padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() - gap + padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
-                if(firstPlayerTurn)
-                    scorea+=2;
-                else
-                    scoreb+=2;
+                switch (turn%playerNumber){
+                    case 0:{
+                        scorea+=2;
+                        break;
+                    }
+                    case 1:{
+                        scoreb+=2;
+                        break;
+                    }
+                    case 2:{
+                        scorec+=2;
+                        break;
+                    }
+                    case 3:{
+                        scored+=2;
+                        break;
+                    }
+                }
                 break;
             }
             case 12:{
+                turn--;
                 if(linesList.get(i).getX1() > linesList.get(i).getX2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() - padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() - gap + padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() - padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() - gap + padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
-                if(firstPlayerTurn)
-                    scorea++;
-                else
-                    scoreb++;
+                switch (turn%playerNumber){
+                    case 0:{
+                        scorea++;
+                        break;
+                    }
+                    case 1:{
+                        scoreb++;
+                        break;
+                    }
+                    case 2:{
+                        scorec++;
+                        break;
+                    }
+                    case 3:{
+                        scored++;
+                        break;
+                    }
+                }
                 break;
             }
             case 6:{
+                turn--;
                 if(linesList.get(i).getX1() > linesList.get(i).getX2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
-                if(firstPlayerTurn)
-                    scorea++;
-                else
-                    scoreb++;
+                switch (turn%playerNumber){
+                    case 0:{
+                        scorea++;
+                        break;
+                    }
+                    case 1:{
+                        scoreb++;
+                        break;
+                    }
+                    case 2:{
+                        scorec++;
+                        break;
+                    }
+                    case 3:{
+                        scored++;
+                        break;
+                    }
+                }
                 break;
             }
             case 612:{
+                turn--;
                 if(linesList.get(i).getX1() > linesList.get(i).getX2()) {
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() - padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() - gap + padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                     canvas.drawRect(linesList.get(i).getX2() + padding, linesList.get(i).getY2() + padding,
                             linesList.get(i).getX2() + gap - padding, linesList.get(i).getY2() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
                 else {
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() - padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() - gap + padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                     canvas.drawRect(linesList.get(i).getX1() + padding, linesList.get(i).getY1() + padding,
                             linesList.get(i).getX1() + gap - padding, linesList.get(i).getY1() + gap - padding,
-                            (firstPlayerTurn)? boxA : boxB);
+                            boxPaint(turn));
                 }
-                if(firstPlayerTurn)
-                    scorea+=2;
-                else
-                    scoreb+=2;
+                switch (turn%playerNumber){
+                    case 0:{
+                        scorea+=2;
+                        break;
+                    }
+                    case 1:{
+                        scoreb+=2;
+                        break;
+                    }
+                    case 2:{
+                        scorec+=2;
+                        break;
+                    }
+                    case 3:{
+                        scored+=2;
+                        break;
+                    }
+                }
                 break;
             }
             default:{
                 break;
             }
         }
-            if (linesList.get(i).getDirection() == 0) {
-                if (firstPlayerTurn) {
-                    firstPlayerTurn = false;
-                } else {
-                    firstPlayerTurn = true;
-                }
-            }
+
     }
         if(scorea!=scoreA) {
             if(scorea>scoreA){
@@ -368,6 +485,26 @@ public class MyDrawView extends View {
             scoreB = scoreb;
             TextView txtView = (TextView) ((MainActivity)getContext()).findViewById(R.id.scoreViewB);
             txtView.setText(""+scoreB);
+        }
+        if(playerNumber>2) {
+            if (scorec != scoreC) {
+                if (scorec > scoreC) {
+                    vibrate();
+                }
+                scoreC = scorec;
+                TextView txtView = (TextView) ((MainActivity) getContext()).findViewById(R.id.scoreViewC);
+                txtView.setText("" + scoreC);
+            }
+        }
+        if(playerNumber>3) {
+            if (scored != scoreD) {
+                if (scored > scoreD) {
+                    vibrate();
+                }
+                scoreD = scored;
+                TextView txtView = (TextView) ((MainActivity) getContext()).findViewById(R.id.scoreViewD);
+                txtView.setText("" + scoreD);
+            }
         }
     }
 
@@ -459,5 +596,42 @@ public class MyDrawView extends View {
             v.vibrate(200);
         }
     }
+
+    public Paint linePaint(int turn){
+        switch(turn%playerNumber){
+            case 0: {
+                return lineA;
+            }
+            case 1: {
+                return lineB;
+            }
+            case 2: {
+                return  lineC;
+            }
+            case 3: {
+                return lineD;
+            }
+        }
+        return dotsPaint;
+    }
+
+    public Paint boxPaint(int turn){
+        switch(turn%playerNumber){
+            case 0: {
+                return boxA;
+            }
+            case 1: {
+                return boxB;
+            }
+            case 2: {
+                return  boxC;
+            }
+            case 3: {
+                return boxD;
+            }
+        }
+        return dotsPaint;
+    }
+
 
 }

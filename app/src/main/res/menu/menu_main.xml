@@ -20,6 +20,24 @@
         android:icon="@drawable/ic_add_white_24dp"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/player2"
+        android:orderInCategory="100"
+        android:title="2 Players"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/player3"
+        android:orderInCategory="100"
+        android:title="3 Players"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/player4"
+        android:orderInCategory="100"
+        android:title="4 Players"
+        app:showAsAction="never" />
+
 
 
 </menu>
