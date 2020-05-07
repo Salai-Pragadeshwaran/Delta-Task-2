@@ -6,11 +6,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -29,6 +32,7 @@ public class MyDrawView extends View {
     public static int scoreB ;
     public static int scoreC ;
     public static int scoreD ;
+    public static int turnAnim ;
     float canvasSize ;
     float dotRadius = 20 ;
     float gap ;
@@ -49,6 +53,18 @@ public class MyDrawView extends View {
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
     MediaPlayer clickSound = MediaPlayer.create(getContext(), R.raw.click2);
+    CountDownTimer turnNotMadeTimer = new CountDownTimer(500000, 5000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+            bounceAnim(millisUntilFinished);
+        }
+
+        @Override
+        public void onFinish() {
+            turnNotMadeTimer.start();
+        }
+    };
 
 
     public MyDrawView(Context context) {
@@ -76,6 +92,8 @@ public class MyDrawView extends View {
     private void init(@Nullable AttributeSet set){
         scoreA = 0;
         scoreB = 0;
+        turnAnim = 0;
+        turnNotMadeTimer.start();
 
         dotsPaint.setColor(getResources().getColor(R.color.dots));
         dotsPaint.setStyle(Paint.Style.FILL);
@@ -506,6 +524,39 @@ public class MyDrawView extends View {
                 txtView.setText("" + scoreD);
             }
         }
+        if(turn!=turnAnim){
+            turnAnim = turn;
+            turnNotMadeTimer.cancel();
+            turnNotMadeTimer.start();
+        }
+    }
+
+    private void bounceAnim(long muf) {
+        if(muf<499900){
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.bounce);
+
+        switch(turnAnim%playerNumber){
+            case 0:{
+                TextView player = ((MainActivity) getContext()).findViewById(R.id.playerA);
+                player.startAnimation(animation);
+                break;
+            }
+            case 1:{
+                TextView player = ((MainActivity) getContext()).findViewById(R.id.playerB);
+                player.startAnimation(animation);
+                break;
+            }
+            case 2:{
+                TextView player = ((MainActivity) getContext()).findViewById(R.id.playerC);
+                player.startAnimation(animation);
+                break;
+            }
+            case 3:{
+                TextView player = ((MainActivity) getContext()).findViewById(R.id.playerD);
+                player.startAnimation(animation);
+                break;
+            }
+        }}
     }
 
 

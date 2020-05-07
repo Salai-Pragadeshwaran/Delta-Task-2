@@ -1,11 +1,13 @@
 package com.example.dotsandboxes
 
 import android.os.Bundle
+import android.os.Handler
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -34,8 +36,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -50,7 +50,14 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings ->{
+
+                var animation = AnimationUtils.loadAnimation(this, R.anim.bounce)
+                scoreViewA.startAnimation(animation)
+
+                return true
+            }
+
             R.id.gridPlus -> {
                 if(MyDrawView.n < 12){
                     MyDrawView.n++
