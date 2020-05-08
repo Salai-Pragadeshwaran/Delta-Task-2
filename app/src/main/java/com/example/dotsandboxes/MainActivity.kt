@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -52,8 +54,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings ->{
 
-                var animation = AnimationUtils.loadAnimation(this, R.anim.bounce)
-                scoreViewA.startAnimation(animation)
+                MyDrawView.linesLists.clear()
 
                 return true
             }
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                 if(MyDrawView.n < 12){
                     MyDrawView.n++
                     MyDrawView.linesLists.clear()
+                    MyDrawView.gameOn = true
                 }
                 return true
             }
@@ -69,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                 if(MyDrawView.n > 3){
                     MyDrawView.n--
                     MyDrawView.linesLists.clear()
+                    MyDrawView.gameOn = true
                 }
                 return true
             }
@@ -77,6 +80,7 @@ class MainActivity : AppCompatActivity() {
                 score4.visibility = View.GONE
                 MyDrawView.linesLists.clear()
                 MyDrawView.playerNumber = 2
+                MyDrawView.gameOn = true
                 return true
             }
             R.id.player3 -> {
@@ -84,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                 score4.visibility = View.GONE
                 MyDrawView.linesLists.clear()
                 MyDrawView.playerNumber = 3
+                MyDrawView.gameOn = true
                 return true
             }
             R.id.player4 -> {
@@ -91,6 +96,7 @@ class MainActivity : AppCompatActivity() {
                 score4.visibility = View.VISIBLE
                 MyDrawView.linesLists.clear()
                 MyDrawView.playerNumber = 4
+                MyDrawView.gameOn = true
                 return true
             }
             else -> super.onOptionsItemSelected(item)

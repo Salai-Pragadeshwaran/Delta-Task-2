@@ -2,11 +2,14 @@ package com.example.dotsandboxes;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.AttributeSet;
@@ -15,10 +18,12 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 import static java.lang.Math.round;
 
@@ -52,7 +57,10 @@ public class MyDrawView extends View {
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
+    public static boolean gameOn ;
     MediaPlayer clickSound = MediaPlayer.create(getContext(), R.raw.click2);
+    MediaPlayer boxSound = MediaPlayer.create(getContext(), R.raw.coin);
+    MediaPlayer gameOverSound = MediaPlayer.create(getContext(), R.raw.powerup);
     CountDownTimer turnNotMadeTimer = new CountDownTimer(500000, 5000) {
         @Override
         public void onTick(long millisUntilFinished) {
@@ -65,6 +73,22 @@ public class MyDrawView extends View {
             turnNotMadeTimer.start();
         }
     };
+
+    Intent intent = new Intent(getContext(), WinnerActivity.class);
+    CountDownTimer intentTimer = new CountDownTimer(2500, 1250) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            //do nothing
+        }
+
+        @Override
+        public void onFinish() {
+            intentTimerRunning = false;
+            getContext().startActivity(intent);
+            linesLists.clear();
+        }
+    };
+    boolean intentTimerRunning = false;
 
 
     public MyDrawView(Context context) {
@@ -94,6 +118,7 @@ public class MyDrawView extends View {
         scoreB = 0;
         turnAnim = 0;
         turnNotMadeTimer.start();
+        gameOn = true;
 
         dotsPaint.setColor(getResources().getColor(R.color.dots));
         dotsPaint.setStyle(Paint.Style.FILL);
@@ -143,15 +168,63 @@ public class MyDrawView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvasSize = canvas.getHeight() ;
-        gap = round(canvasSize/(n+1));
-        canvas.drawColor(getResources().getColor(R.color.canvasBg));
-        //drawTheLine(canvas);
-        drawAllLines(canvas, linesLists);
-        //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
 
-        drawDots(canvas);
+        if(gameOn&&(!intentTimerRunning)) {
+            canvasSize = canvas.getHeight() ;
+            gap = round(canvasSize/(n+1));
+            canvas.drawColor(getResources().getColor(R.color.canvasBg));
+            //drawTheLine(canvas);
+            drawAllLines(canvas, linesLists);
+            //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
+
+            drawDots(canvas);
+            checkIfGameOn();
+        }
+        else if(!gameOn){
+            gameOn = true;
+            displayWinner();
+            //(new Handler()).postDelayed(this::displayWinner, 2000);
+        }
+        else{
+            canvasSize = canvas.getHeight() ;
+            gap = round(canvasSize/(n+1));
+            canvas.drawColor(getResources().getColor(R.color.canvasBg));
+            //drawTheLine(canvas);
+            drawAllLines(canvas, linesLists);
+            //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
+
+            drawDots(canvas);
+        }
+
         postInvalidate();
+    }
+
+    private void displayWinner() {
+
+        if((scoreA>scoreB)&&(scoreA>scoreC)&&(scoreA>scoreD)){
+            //A wins
+            intent.putExtra("WIN_MSG", "Congratulations\nPlayer A\nYou Win !");
+        }
+        else if((scoreB>scoreA)&&(scoreB>scoreC)&&(scoreB>scoreD)){
+            //B wins
+            intent.putExtra("WIN_MSG", "Congratulations\nPlayer B\nYou Win !");
+        }
+        else if((scoreC>scoreB)&&(scoreC>scoreA)&&(scoreC>scoreD)){
+            //C wins
+            intent.putExtra("WIN_MSG", "Congratulations\nPlayer C\nYou Win !");
+        }
+        else if((scoreD>scoreB)&&(scoreD>scoreC)&&(scoreD>scoreA)){
+            //D wins
+            intent.putExtra("WIN_MSG", "Congratulations\nPlayer D\nYou Win !");
+        }
+        else{
+            intent.putExtra("WIN_MSG", "Match Tie");
+        }
+
+        intentTimer.start();
+        gameOverSound.start();
+        intentTimerRunning = true;
+
     }
 
     private void drawTheLine() {
@@ -490,6 +563,7 @@ public class MyDrawView extends View {
     }
         if(scorea!=scoreA) {
             if(scorea>scoreA){
+                boxSound.start();
                 vibrate();
             }
             scoreA = scorea;
@@ -498,6 +572,7 @@ public class MyDrawView extends View {
         }
         if(scoreb!=scoreB) {
             if(scoreb>scoreB){
+                boxSound.start();
                 vibrate();
             }
             scoreB = scoreb;
@@ -507,6 +582,7 @@ public class MyDrawView extends View {
         if(playerNumber>2) {
             if (scorec != scoreC) {
                 if (scorec > scoreC) {
+                    boxSound.start();
                     vibrate();
                 }
                 scoreC = scorec;
@@ -517,6 +593,7 @@ public class MyDrawView extends View {
         if(playerNumber>3) {
             if (scored != scoreD) {
                 if (scored > scoreD) {
+                    boxSound.start();
                     vibrate();
                 }
                 scoreD = scored;
@@ -528,6 +605,14 @@ public class MyDrawView extends View {
             turnAnim = turn;
             turnNotMadeTimer.cancel();
             turnNotMadeTimer.start();
+        }
+
+    }
+
+    private void checkIfGameOn(){
+        if(linesLists.size() == (2*(n)*(n-1))){
+            gameOn = false;
+            turnNotMadeTimer.cancel();
         }
     }
 

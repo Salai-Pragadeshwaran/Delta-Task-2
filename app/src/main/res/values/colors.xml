@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#2979FF</color>
+    <color name="colorPrimaryDark">#19499B</color>
+    <color name="colorAccent">#4929FF</color>
     <color name="canvasBg">#000000</color>
     <color name="dots">#FFFFFF</color>
     <color name="lineA">#FF6D00</color>
