@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -622,22 +623,22 @@ public class MyDrawView extends View {
 
         switch(turnAnim%playerNumber){
             case 0:{
-                TextView player = ((MainActivity) getContext()).findViewById(R.id.playerA);
+                ImageView player = ((MainActivity) getContext()).findViewById(R.id.playerA);
                 player.startAnimation(animation);
                 break;
             }
             case 1:{
-                TextView player = ((MainActivity) getContext()).findViewById(R.id.playerB);
+                ImageView player = ((MainActivity) getContext()).findViewById(R.id.playerB);
                 player.startAnimation(animation);
                 break;
             }
             case 2:{
-                TextView player = ((MainActivity) getContext()).findViewById(R.id.playerC);
+                ImageView player = ((MainActivity) getContext()).findViewById(R.id.playerC);
                 player.startAnimation(animation);
                 break;
             }
             case 3:{
-                TextView player = ((MainActivity) getContext()).findViewById(R.id.playerD);
+                ImageView player = ((MainActivity) getContext()).findViewById(R.id.playerD);
                 player.startAnimation(animation);
                 break;
             }

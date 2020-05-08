@@ -18,7 +18,8 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.61" />
 
 
     <LinearLayout
@@ -26,6 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginRight="16dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/myDrawView"
@@ -40,15 +42,12 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
+            <ImageView
                 android:id="@+id/playerA"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:text="Score A"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/boxA" />
+                app:srcCompat="@drawable/marioa" />
 
             <TextView
                 android:id="@+id/scoreViewA"
@@ -71,15 +70,12 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
+            <ImageView
                 android:id="@+id/playerB"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:text="Score B"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/boxB" />
+                app:srcCompat="@drawable/mariob" />
 
             <TextView
                 android:id="@+id/scoreViewB"
@@ -100,15 +96,12 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
+            <ImageView
                 android:id="@+id/playerC"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:text="Score C"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/boxC" />
+                app:srcCompat="@drawable/marioc" />
 
             <TextView
                 android:id="@+id/scoreViewC"
@@ -128,15 +121,12 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
+            <ImageView
                 android:id="@+id/playerD"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:text="Score D"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/boxD" />
+                app:srcCompat="@drawable/mariod" />
 
             <TextView
                 android:id="@+id/scoreViewD"
