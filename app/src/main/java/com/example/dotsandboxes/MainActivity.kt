@@ -31,7 +31,22 @@ class MainActivity : AppCompatActivity() {
 //                .setAction("Action", null).show()
            var size =  MyDrawView.linesLists.size
             if(size>0) {
-                MyDrawView.linesLists.removeAt(size - 1)
+                if((MyDrawView.singlePlayerMode)&&(MyDrawView.linesLists[size-1].direction!=0)){
+                    MyDrawView.availableOptions.add(MyDrawView.linesLists[size - 1])
+                    MyDrawView.linesLists.removeAt(size - 1)
+                }
+                else if(MyDrawView.singlePlayerMode) {
+                    do {
+                        MyDrawView.availableOptions.add(MyDrawView.linesLists[size - 1])
+                        MyDrawView.linesLists.removeAt(size - 1)
+                        size = MyDrawView.linesLists.size
+                    }while(MyDrawView.linesLists[size-1].direction!=0)
+                    MyDrawView.availableOptions.add(MyDrawView.linesLists[size - 1])
+                    MyDrawView.linesLists.removeAt(size - 1)
+                }
+                else {
+                    MyDrawView.linesLists.removeAt(size - 1)
+                }
             }
         }
 
@@ -63,6 +78,7 @@ class MainActivity : AppCompatActivity() {
                 if(MyDrawView.n < 12){
                     MyDrawView.n++
                     MyDrawView.linesLists.clear()
+                    MyDrawView.availableOptions.clear()
                     MyDrawView.gameOn = true
                 }
                 return true
@@ -71,6 +87,7 @@ class MainActivity : AppCompatActivity() {
                 if(MyDrawView.n > 3){
                     MyDrawView.n--
                     MyDrawView.linesLists.clear()
+                    MyDrawView.availableOptions.clear()
                     MyDrawView.gameOn = true
                 }
                 return true

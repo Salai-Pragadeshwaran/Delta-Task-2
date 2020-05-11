@@ -8,8 +8,6 @@ import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.CountDownTimer;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.AttributeSet;
@@ -19,26 +17,29 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Timer;
+import java.util.Random;
 
+import static java.lang.Math.random;
 import static java.lang.Math.round;
 
 
 public class MyDrawView extends View {
 
     public static ArrayList<LinesList> linesLists = new ArrayList<LinesList>();
+    public static ArrayList<LinesList> availableOptions = new ArrayList<>();
     public static  int n = 5; // make this accessible for modification
     public static int playerNumber = 2;
+    public static Boolean singlePlayerMode = true;
     public static int scoreA ;
     public static int scoreB ;
     public static int scoreC ;
     public static int scoreD ;
     public static int turnAnim ;
+    public static int difficultyLevel = 2 ;
     float canvasSize ;
     float dotRadius = 20 ;
     float gap ;
@@ -58,6 +59,7 @@ public class MyDrawView extends View {
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
+    public static boolean computerTurn = false;
     public static boolean gameOn ;
     MediaPlayer clickSound = MediaPlayer.create(getContext(), R.raw.click2);
     MediaPlayer boxSound = MediaPlayer.create(getContext(), R.raw.coin);
@@ -121,6 +123,7 @@ public class MyDrawView extends View {
         turnNotMadeTimer.start();
         gameOn = true;
 
+
         dotsPaint.setColor(getResources().getColor(R.color.dots));
         dotsPaint.setStyle(Paint.Style.FILL);
         dotsPaint.isAntiAlias();
@@ -169,36 +172,45 @@ public class MyDrawView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-
-        if(gameOn&&(!intentTimerRunning)) {
-            canvasSize = canvas.getHeight() ;
-            gap = round(canvasSize/(n+1));
+        if(singlePlayerMode){
+            canvasSize = canvas.getHeight();
+            gap = round(canvasSize / (n + 1));
+            if(availableOptions.size()==0){
+                initializeAvailableOptions();
+            }
             canvas.drawColor(getResources().getColor(R.color.canvasBg));
-            //drawTheLine(canvas);
             drawAllLines(canvas, linesLists);
-            //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
-
-            drawDots(canvas);
-            checkIfGameOn();
-        }
-        else if(!gameOn){
-            gameOn = true;
-            displayWinner();
-            //(new Handler()).postDelayed(this::displayWinner, 2000);
-        }
-        else{
-            canvasSize = canvas.getHeight() ;
-            gap = round(canvasSize/(n+1));
-            canvas.drawColor(getResources().getColor(R.color.canvasBg));
-            //drawTheLine(canvas);
-            drawAllLines(canvas, linesLists);
-            //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
-
             drawDots(canvas);
         }
+        else {
+            if (gameOn && (!intentTimerRunning)) {
+                canvasSize = canvas.getHeight();
+                gap = round(canvasSize / (n + 1));
+                canvas.drawColor(getResources().getColor(R.color.canvasBg));
+                //drawTheLine(canvas);
+                drawAllLines(canvas, linesLists);
+                //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
 
+                drawDots(canvas);
+                checkIfGameOn();
+            } else if (!gameOn) {
+                gameOn = true;
+                displayWinner();
+                //(new Handler()).postDelayed(this::displayWinner, 2000);
+            } else {
+                canvasSize = canvas.getHeight();
+                gap = round(canvasSize / (n + 1));
+                canvas.drawColor(getResources().getColor(R.color.canvasBg));
+                //drawTheLine(canvas);
+                drawAllLines(canvas, linesLists);
+                //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
+
+                drawDots(canvas);
+            }
+        }
         postInvalidate();
     }
+
 
     private void displayWinner() {
 
@@ -331,6 +343,9 @@ public class MyDrawView extends View {
         drawLine = false;
         centreX = 0;
         skipOnce = true;
+        if(singlePlayerMode){
+            makeComputerMove();
+        }
     }
 
 
@@ -608,6 +623,10 @@ public class MyDrawView extends View {
             turnNotMadeTimer.start();
         }
 
+        if((singlePlayerMode&&((turn%2)==1))&&(availableOptions.size()!=0)){
+            drawComputerLine();
+        }
+
     }
 
     private void checkIfGameOn(){
@@ -770,5 +789,236 @@ public class MyDrawView extends View {
         return dotsPaint;
     }
 
+// SINGLE MODE SINGLE MODE SINGLE MODE // SINGLE MODE SINGLE MODE SINGLE MODE  // SINGLE MODE SINGLE MODE SINGLE MODE  // SINGLE MODE SINGLE MODE SINGLE MODE
 
+    private void initializeAvailableOptions() {
+            for(int i=1; i<=n; i++){
+                for(int j=1; j<n; j++){
+                    availableOptions.add(new LinesList(j*gap, i*gap, (j+1)*gap, i*gap, 0));
+                }
+            }
+            for(int i=1; i<=n; i++){
+                for(int j=1; j<n; j++){
+                    availableOptions.add(new LinesList(i*gap, j*gap, i*gap, (j+1)*gap, 0));
+                }
+            }
+
+    }
+
+
+    public int searchIfPresentInAvailableOptions(ArrayList<LinesList> lists  , LinesList line) {
+        float x1 = line.getX1();
+        float x2 = line.getX2();
+        float y1 = line.getY1();
+        float y2 = line.getY2();
+        for (int i = 0; i < lists.size(); i++) {
+            if ((lists.get(i).getX1() == x1) && (lists.get(i).getY1() == y1) &&
+                    (lists.get(i).getX2() == x2) && (lists.get(i).getY2() == y2)) {
+                return i;
+            }
+            if ((lists.get(i).getX1() == x2) && (lists.get(i).getY1() == y2) &&
+                    (lists.get(i).getX2() == x1) && (lists.get(i).getY2() == y1)) {
+                return i;
+            }
+        }
+        return -1 ;
+    }
+
+
+    private void makeComputerMove() {
+    int index = searchIfPresentInAvailableOptions(availableOptions, linesLists.get(linesLists.size()-1));
+    if(index!=-1) {
+        availableOptions.remove(index);
+    }
+    }
+
+    private void selectRandomLine(){
+        Random random = new Random();
+        int index = random.nextInt(availableOptions.size());
+        linesLists.add(new LinesList(availableOptions.get(index).getX1(), availableOptions.get(index).getY1(),
+                availableOptions.get(index).getX2(), availableOptions.get(index).getY2()
+                , checkBox(availableOptions.get(index).getX1(), availableOptions.get(index).getY1(),
+                availableOptions.get(index).getX2(), availableOptions.get(index).getY2())));
+        availableOptions.remove(index);
+    }
+
+    private boolean draw4thLine(boolean a, boolean b, float xx1, float yy1, float xx2, float yy2) {
+        if (a && b && (searchIfPresent(availableOptions, xx1, yy1, xx2, yy2)) && (!searchIfPresent(linesLists, xx1, yy1, xx2, yy2))) {
+            linesLists.add(new LinesList(xx1, yy1, xx2, yy2, checkBox(xx1,yy1,xx2,yy2)));
+            int index = searchIfPresentInAvailableOptions(availableOptions, linesLists.get(linesLists.size() - 1));
+            availableOptions.remove(index);
+        }
+        return (a && b && (searchIfPresent(availableOptions, xx1, yy1, xx2, yy2)) && (!searchIfPresent(linesLists, xx1, yy1, xx2, yy2)));
+    }
+    private void drawComputerLine(){
+        switch (difficultyLevel) {
+            case 1:{
+                selectRandomLine();
+                break;
+            }
+            case 2:{
+                //if(linesLists.get(linesLists.size()-1).getDirection()==0){
+                    float xx1, yy1, xx2, yy2 ;
+                    boolean a, b;
+                    int index;
+                    xx1 = linesLists.get(linesLists.size()-1).getX1();
+                    yy1 = linesLists.get(linesLists.size()-1).getY1();
+                    xx2 = linesLists.get(linesLists.size()-1).getX2();
+                    yy2 = linesLists.get(linesLists.size()-1).getY2();
+                    if(yy1==yy2){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1-gap);
+                        b = searchIfPresent(linesLists, xx2, yy2, xx2, yy2-gap);
+                        if (draw4thLine(a, b, xx1, yy1 - gap, xx2, yy2 - gap)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1+gap);
+                        b = searchIfPresent(linesLists, xx2, yy2, xx2, yy2+gap);
+                        if (draw4thLine(a, b, xx1, yy1 + gap, xx2, yy2 + gap)){
+                            break;
+                        }
+
+                        if(xx1<xx2) {
+                            a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 + gap);
+                            b = searchIfPresent(linesLists, xx1, yy1 + gap, xx1 + gap, yy1 + gap);
+                            if (draw4thLine(a, b, xx2, yy2, xx2, yy2 + gap)) {
+                                break;
+                            }
+
+                            a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 - gap);
+                            b = searchIfPresent(linesLists, xx1, yy1 - gap, xx1 + gap, yy1 - gap);
+                            if (draw4thLine(a, b, xx2, yy2, xx2, yy2 - gap)) {
+                                break;
+                            }
+
+                            a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 - gap);
+                            b = searchIfPresent(linesLists, xx2, yy2 - gap, xx2 - gap, yy2 - gap);
+                            if (draw4thLine(a, b, xx1, yy1, xx1, yy1 - gap)) {
+                                break;
+                            }
+
+                            a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 + gap);
+                            b = searchIfPresent(linesLists, xx2, yy2 + gap, xx2 - gap, yy2 + gap);
+                            if (draw4thLine(a, b, xx1, yy1, xx1, yy1 + gap)) {
+                                break;
+                            }
+                        }
+                        else{
+                        float change ;
+                        change = xx1;
+                        xx1 = xx2;
+                        xx2 = change;
+                        change = yy1;
+                        yy1 = yy2;
+                        yy2 = change;
+
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1+gap);
+                        b = searchIfPresent(linesLists, xx1, yy1+gap, xx1 +gap, yy1+gap);
+                        if (draw4thLine(a, b, xx2, yy2 , xx2, yy2 + gap)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1-gap);
+                        b = searchIfPresent(linesLists, xx1, yy1-gap, xx1 +gap, yy1-gap);
+                        if (draw4thLine(a, b, xx2, yy2 , xx2, yy2 - gap)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2-gap);
+                        b = searchIfPresent(linesLists, xx2, yy2-gap, xx2 -gap, yy2-gap);
+                        if (draw4thLine(a, b, xx1, yy1 , xx1, yy1 - gap)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2+gap);
+                        b = searchIfPresent(linesLists, xx2, yy2+gap, xx2 -gap, yy2+gap);
+                        if (draw4thLine(a, b, xx1, yy1 , xx1, yy1 + gap)){
+                            break;
+                        }}
+                    }
+                    else if(xx1==xx2){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1+gap);
+                        b = searchIfPresent(linesLists, xx2, yy2, xx2+gap, yy2);
+                        if (draw4thLine(a, b,xx1+gap, yy1, xx2+gap, yy2)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1-gap, yy1);
+                        b = searchIfPresent(linesLists, xx2, yy2, xx2-gap, yy2);
+                        if (draw4thLine(a, b,xx1-gap, yy1, xx2-gap, yy2)){
+                            break;
+                        }
+
+                        if(yy1<yy2){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1+gap, yy1);
+                        b = searchIfPresent(linesLists, xx1+gap, yy1, xx1+gap, yy1+gap);
+                        if (draw4thLine(a, b,xx2, yy2, xx2+gap, yy2)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1-gap, yy1);
+                        b = searchIfPresent(linesLists, xx1-gap, yy1, xx1-gap, yy1+gap);
+                        if (draw4thLine(a, b,xx2, yy2, xx2-gap, yy2)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2+gap, yy2);
+                        b = searchIfPresent(linesLists, xx2+gap, yy2, xx2+gap, yy2-gap); //fishy
+                        if (draw4thLine(a, b,xx1, yy1, xx1+gap, yy1)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2-gap, yy2);
+                        b = searchIfPresent(linesLists, xx2-gap, yy2,xx2-gap, yy2-gap);
+                        if (draw4thLine(a, b,xx1, yy1, xx1-gap, yy1)){
+                            break;
+                        }}
+
+
+                        else{
+                        float change ;
+                        change = xx1;
+                        xx1 = xx2;
+                        xx2 = change;
+                        change = yy1;
+                        yy1 = yy2;
+                        yy2 = change;
+
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1+gap, yy1);
+                        b = searchIfPresent(linesLists, xx1+gap, yy1, xx1+gap, yy1+gap);
+                        if (draw4thLine(a, b,xx2, yy2, xx2+gap, yy2)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1-gap, yy1);
+                        b = searchIfPresent(linesLists, xx1-gap, yy1, xx1-gap, yy1+gap);
+                        if (draw4thLine(a, b,xx2, yy2, xx2-gap, yy2)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2+gap, yy2);
+                        b = searchIfPresent(linesLists, xx2+gap, yy2, xx2+gap, yy2-gap);
+                        if (draw4thLine(a, b,xx1, yy1, xx1+gap, yy1)){
+                            break;
+                        }
+
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2-gap, yy2);
+                        b = searchIfPresent(linesLists, xx2-gap, yy2,xx2-gap, yy2-gap);
+                        if (draw4thLine(a, b,xx1, yy1, xx1-gap, yy1)){
+                            break;
+                        }}
+
+                    }
+
+                        selectRandomLine();
+                        break;
+
+                //}
+            }
+            default:{
+                selectRandomLine();
+                break;
+            }
+        }
+    }
 }
