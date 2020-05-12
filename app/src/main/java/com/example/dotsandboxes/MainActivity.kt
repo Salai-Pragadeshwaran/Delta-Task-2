@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import android.widget.Toast
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -98,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                 MyDrawView.linesLists.clear()
                 MyDrawView.playerNumber = 2
                 MyDrawView.gameOn = true
+                MyDrawView.singlePlayerMode = false
                 return true
             }
             R.id.player3 -> {
@@ -106,6 +108,7 @@ class MainActivity : AppCompatActivity() {
                 MyDrawView.linesLists.clear()
                 MyDrawView.playerNumber = 3
                 MyDrawView.gameOn = true
+                MyDrawView.singlePlayerMode = false
                 return true
             }
             R.id.player4 -> {
@@ -114,8 +117,34 @@ class MainActivity : AppCompatActivity() {
                 MyDrawView.linesLists.clear()
                 MyDrawView.playerNumber = 4
                 MyDrawView.gameOn = true
+                MyDrawView.singlePlayerMode = false
                 return true
             }
+            R.id.level_1 -> {
+                score3.visibility = View.GONE
+                score4.visibility = View.GONE
+                MyDrawView.linesLists.clear()
+                MyDrawView.availableOptions.clear()
+                MyDrawView.playerNumber = 2
+                MyDrawView.gameOn = true
+                MyDrawView.singlePlayerMode = true
+                Toast.makeText(this, "Switched to Single Player Mode - difficulty level 1", Toast.LENGTH_SHORT).show()
+                MyDrawView.difficultyLevel = 1
+                return true
+            }
+            R.id.level_2 -> {
+                score3.visibility = View.GONE
+                score4.visibility = View.GONE
+                MyDrawView.linesLists.clear()
+                MyDrawView.availableOptions.clear()
+                MyDrawView.playerNumber = 2
+                MyDrawView.gameOn = true
+                MyDrawView.singlePlayerMode = true
+                Toast.makeText(this, "Switched to Single Player Mode - difficulty level 2", Toast.LENGTH_SHORT).show()
+                MyDrawView.difficultyLevel = 2
+                return true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

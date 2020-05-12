@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static java.lang.Math.random;
 import static java.lang.Math.round;
 
 
@@ -33,13 +32,14 @@ public class MyDrawView extends View {
     public static ArrayList<LinesList> availableOptions = new ArrayList<>();
     public static  int n = 5; // make this accessible for modification
     public static int playerNumber = 2;
-    public static Boolean singlePlayerMode = true;
+    public static Boolean singlePlayerMode = false;
     public static int scoreA ;
     public static int scoreB ;
     public static int scoreC ;
     public static int scoreD ;
     public static int turnAnim ;
     public static int difficultyLevel = 2 ;
+    int index;
     float canvasSize ;
     float dotRadius = 20 ;
     float gap ;
@@ -624,7 +624,9 @@ public class MyDrawView extends View {
         }
 
         if((singlePlayerMode&&((turn%2)==1))&&(availableOptions.size()!=0)){
-            drawComputerLine();
+            if(linesList.size()<(2*(n)*(n-1))) {
+                drawComputerLine();
+            }
         }
 
     }
@@ -826,26 +828,242 @@ public class MyDrawView extends View {
 
 
     private void makeComputerMove() {
-    int index = searchIfPresentInAvailableOptions(availableOptions, linesLists.get(linesLists.size()-1));
+    index = searchIfPresentInAvailableOptions(availableOptions, linesLists.get(linesLists.size()-1));
     if(index!=-1) {
         availableOptions.remove(index);
     }
     }
 
+
+    private int checkIf3rdLine( ArrayList temporary){
+        float xx1 ;
+        float yy1 ;
+        float xx2 ;
+        float yy2 ;
+        boolean a, b;
+        outer:
+        for(int i ;availableOptions.size()>0 ; avoidThirdLine(temporary)) {
+            xx1 = availableOptions.get(index).getX1();
+            yy1 = availableOptions.get(index).getY1();
+            xx2 = availableOptions.get(index).getX2();
+            yy2 = availableOptions.get(index).getY2();
+            if (yy1 == yy2) {
+                a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 - gap);
+                b = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 - gap);
+                if (a && b) {
+                    continue outer;
+                }
+
+                a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 + gap);
+                b = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 + gap);
+                if (a && b) {
+                    continue outer;
+                }
+
+                if (xx1 < xx2) {
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 + gap);
+                    b = searchIfPresent(linesLists, xx1, yy1 + gap, xx1 + gap, yy1 + gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 - gap);
+                    b = searchIfPresent(linesLists, xx1, yy1 - gap, xx1 + gap, yy1 - gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+
+                    a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 - gap);
+                    b = searchIfPresent(linesLists, xx2, yy2 - gap, xx2 - gap, yy2 - gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+
+                    a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 + gap);
+                    b = searchIfPresent(linesLists, xx2, yy2 + gap, xx2 - gap, yy2 + gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+                } else {
+                    float change;
+                    change = xx1;
+                    xx1 = xx2;
+                    xx2 = change;
+                    change = yy1;
+                    yy1 = yy2;
+                    yy2 = change;
+
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 + gap);
+                    b = searchIfPresent(linesLists, xx1, yy1 + gap, xx1 + gap, yy1 + gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 - gap);
+                    b = searchIfPresent(linesLists, xx1, yy1 - gap, xx1 + gap, yy1 - gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+
+                    a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 - gap);
+                    b = searchIfPresent(linesLists, xx2, yy2 - gap, xx2 - gap, yy2 - gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+
+                    a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 + gap);
+                    b = searchIfPresent(linesLists, xx2, yy2 + gap, xx2 - gap, yy2 + gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+                }
+            } else if (xx1 == xx2) {
+                a = searchIfPresent(linesLists, xx1, yy1, xx1 + gap, yy1);
+                b = searchIfPresent(linesLists, xx2, yy2, xx2 + gap, yy2);
+                if (a && b) {
+                    continue outer;
+                }
+
+
+                a = searchIfPresent(linesLists, xx1, yy1, xx1 - gap, yy1);
+                b = searchIfPresent(linesLists, xx2, yy2, xx2 - gap, yy2);
+                if (a && b) {
+                    continue outer;
+                }
+
+
+                if (yy1 < yy2) {
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1 + gap, yy1);
+                    b = searchIfPresent(linesLists, xx1 + gap, yy1, xx1 + gap, yy1 + gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1 - gap, yy1);
+                    b = searchIfPresent(linesLists, xx1 - gap, yy1, xx1 - gap, yy1 + gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+
+                    a = searchIfPresent(linesLists, xx2, yy2, xx2 + gap, yy2);
+                    b = searchIfPresent(linesLists, xx2 + gap, yy2, xx2 + gap, yy2 - gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+
+
+                    a = searchIfPresent(linesLists, xx2, yy2, xx2 - gap, yy2);
+                    b = searchIfPresent(linesLists, xx2 - gap, yy2, xx2 - gap, yy2 - gap);
+                    if (a && b) {
+                        continue outer;
+                    }
+                }
+            } else {
+                float change;
+                change = xx1;
+                xx1 = xx2;
+                xx2 = change;
+                change = yy1;
+                yy1 = yy2;
+                yy2 = change;
+
+                a = searchIfPresent(linesLists, xx1, yy1, xx1 + gap, yy1);
+                b = searchIfPresent(linesLists, xx1 + gap, yy1, xx1 + gap, yy1 + gap);
+                if (a && b) {
+                    continue outer;
+                }
+
+
+                a = searchIfPresent(linesLists, xx1, yy1, xx1 - gap, yy1);
+                b = searchIfPresent(linesLists, xx1 - gap, yy1, xx1 - gap, yy1 + gap);
+                if (a && b) {
+                    continue outer;
+                }
+
+
+                a = searchIfPresent(linesLists, xx2, yy2, xx2 + gap, yy2);
+                b = searchIfPresent(linesLists, xx2 + gap, yy2, xx2 + gap, yy2 - gap);
+                if (a && b) {
+                    continue outer;
+                }
+
+
+                a = searchIfPresent(linesLists, xx2, yy2, xx2 - gap, yy2);
+                b = searchIfPresent(linesLists, xx2 - gap, yy2, xx2 - gap, yy2 - gap);
+                if (a && b) {
+                    continue outer;
+                }
+
+            }
+
+            return index;
+        }
+        if(availableOptions.size()==0){
+            availableOptions.addAll(temporary);
+            temporary.clear();
+            Random random = new Random();
+            index = random.nextInt(availableOptions.size());
+        }
+        else {
+            availableOptions.addAll(temporary);
+            temporary.clear();
+        }
+        return index;
+    }
+
     private void selectRandomLine(){
-        Random random = new Random();
-        int index = random.nextInt(availableOptions.size());
+
+        ArrayList<LinesList> temporary = new ArrayList();
+
+
+        if(difficultyLevel>1){
+            Random random = new Random();
+            if(availableOptions.size()>0) {
+                index = random.nextInt(availableOptions.size());
+            }
+            else{
+                index = 0;
+            }
+            index = checkIf3rdLine(temporary);
+            }
+
+
+        else {
+            Random random = new Random();
+            index = random.nextInt(availableOptions.size());
+        }
+
         linesLists.add(new LinesList(availableOptions.get(index).getX1(), availableOptions.get(index).getY1(),
                 availableOptions.get(index).getX2(), availableOptions.get(index).getY2()
                 , checkBox(availableOptions.get(index).getX1(), availableOptions.get(index).getY1(),
                 availableOptions.get(index).getX2(), availableOptions.get(index).getY2())));
         availableOptions.remove(index);
+        availableOptions.addAll(temporary);
+        temporary.clear();
+    }
+
+    private void avoidThirdLine( ArrayList temporary) {
+            temporary.add(availableOptions.get(index));
+            availableOptions.remove(index);
+
+        Random random = new Random();
+        if(availableOptions.size()>0) {
+            index = random.nextInt(availableOptions.size());
+        }
     }
 
     private boolean draw4thLine(boolean a, boolean b, float xx1, float yy1, float xx2, float yy2) {
         if (a && b && (searchIfPresent(availableOptions, xx1, yy1, xx2, yy2)) && (!searchIfPresent(linesLists, xx1, yy1, xx2, yy2))) {
             linesLists.add(new LinesList(xx1, yy1, xx2, yy2, checkBox(xx1,yy1,xx2,yy2)));
-            int index = searchIfPresentInAvailableOptions(availableOptions, linesLists.get(linesLists.size() - 1));
+            index = searchIfPresentInAvailableOptions(availableOptions, linesLists.get(linesLists.size() - 1));
             availableOptions.remove(index);
         }
         return (a && b && (searchIfPresent(availableOptions, xx1, yy1, xx2, yy2)) && (!searchIfPresent(linesLists, xx1, yy1, xx2, yy2)));
@@ -860,7 +1078,7 @@ public class MyDrawView extends View {
                 //if(linesLists.get(linesLists.size()-1).getDirection()==0){
                     float xx1, yy1, xx2, yy2 ;
                     boolean a, b;
-                    int index;
+                    //int index;
                     xx1 = linesLists.get(linesLists.size()-1).getX1();
                     yy1 = linesLists.get(linesLists.size()-1).getY1();
                     xx2 = linesLists.get(linesLists.size()-1).getX2();
@@ -937,7 +1155,7 @@ public class MyDrawView extends View {
                         }}
                     }
                     else if(xx1==xx2){
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1+gap);
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1+gap, yy1);
                         b = searchIfPresent(linesLists, xx2, yy2, xx2+gap, yy2);
                         if (draw4thLine(a, b,xx1+gap, yy1, xx2+gap, yy2)){
                             break;

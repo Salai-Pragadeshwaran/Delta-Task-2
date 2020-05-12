@@ -38,6 +38,26 @@
         android:title="4 Players"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/switch_mode"
+        android:orderInCategory="100"
+        android:title="Switch Mode"
+        app:showAsAction="never" >
+
+    <item
+        android:id="@+id/level_1"
+        android:orderInCategory="100"
+        android:title="Level 1"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/level_2"
+        android:orderInCategory="100"
+        android:title="Level 2"
+        app:showAsAction="never" />
+
+    </item>
+
 
 
 </menu>
