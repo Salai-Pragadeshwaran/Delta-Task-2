@@ -39,6 +39,7 @@ public class MyDrawView extends View {
     public static int scoreD ;
     public static int turnAnim ;
     public static int difficultyLevel = 2 ;
+    int computerStreak = 0;
     int index;
     float canvasSize ;
     float dotRadius = 20 ;
@@ -56,6 +57,7 @@ public class MyDrawView extends View {
     Paint boxB = new Paint();
     Paint boxC = new Paint();
     Paint boxD = new Paint();
+    public static boolean continueStreak = false;
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
@@ -1065,8 +1067,14 @@ public class MyDrawView extends View {
             linesLists.add(new LinesList(xx1, yy1, xx2, yy2, checkBox(xx1,yy1,xx2,yy2)));
             index = searchIfPresentInAvailableOptions(availableOptions, linesLists.get(linesLists.size() - 1));
             availableOptions.remove(index);
+
+            if(difficultyLevel>2) {
+                computerStreak++;
+
+                return true;
+            }
         }
-        return (a && b && (searchIfPresent(availableOptions, xx1, yy1, xx2, yy2)) && (!searchIfPresent(linesLists, xx1, yy1, xx2, yy2)));
+        return false;
     }
     private void drawComputerLine(){
         switch (difficultyLevel) {
@@ -1074,55 +1082,62 @@ public class MyDrawView extends View {
                 selectRandomLine();
                 break;
             }
-            case 2:{
+            case 3:
+            case 2: {
                 //if(linesLists.get(linesLists.size()-1).getDirection()==0){
-                    float xx1, yy1, xx2, yy2 ;
-                    boolean a, b;
-                    //int index;
-                    xx1 = linesLists.get(linesLists.size()-1).getX1();
-                    yy1 = linesLists.get(linesLists.size()-1).getY1();
-                    xx2 = linesLists.get(linesLists.size()-1).getX2();
-                    yy2 = linesLists.get(linesLists.size()-1).getY2();
-                    if(yy1==yy2){
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1-gap);
-                        b = searchIfPresent(linesLists, xx2, yy2, xx2, yy2-gap);
-                        if (draw4thLine(a, b, xx1, yy1 - gap, xx2, yy2 - gap)){
+                float xx1, yy1, xx2, yy2;
+                boolean a, b;
+                //int index;
+                xx1 = linesLists.get(linesLists.size() - 1).getX1();
+                yy1 = linesLists.get(linesLists.size() - 1).getY1();
+                xx2 = linesLists.get(linesLists.size() - 1).getX2();
+                yy2 = linesLists.get(linesLists.size() - 1).getY2();
+                if((continueStreak)&&(index>=0)){
+                    xx1 = linesLists.get(index).getX1();
+                    yy1 = linesLists.get(index).getY1();
+                    xx2 = linesLists.get(index).getX2();
+                    yy2 = linesLists.get(index).getY2();
+                    continueStreak = false;
+                }
+                if (yy1 == yy2) {
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 - gap);
+                    b = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 - gap);
+                    if (draw4thLine(a, b, xx1, yy1 - gap, xx2, yy2 - gap)) {
+                        break;
+                    }
+
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 + gap);
+                    b = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 + gap);
+                    if (draw4thLine(a, b, xx1, yy1 + gap, xx2, yy2 + gap)) {
+                        break;
+                    }
+
+                    if (xx1 < xx2) {
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 + gap);
+                        b = searchIfPresent(linesLists, xx1, yy1 + gap, xx1 + gap, yy1 + gap);
+                        if (draw4thLine(a, b, xx2, yy2, xx2, yy2 + gap)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1+gap);
-                        b = searchIfPresent(linesLists, xx2, yy2, xx2, yy2+gap);
-                        if (draw4thLine(a, b, xx1, yy1 + gap, xx2, yy2 + gap)){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 - gap);
+                        b = searchIfPresent(linesLists, xx1, yy1 - gap, xx1 + gap, yy1 - gap);
+                        if (draw4thLine(a, b, xx2, yy2, xx2, yy2 - gap)) {
                             break;
                         }
 
-                        if(xx1<xx2) {
-                            a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 + gap);
-                            b = searchIfPresent(linesLists, xx1, yy1 + gap, xx1 + gap, yy1 + gap);
-                            if (draw4thLine(a, b, xx2, yy2, xx2, yy2 + gap)) {
-                                break;
-                            }
-
-                            a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 - gap);
-                            b = searchIfPresent(linesLists, xx1, yy1 - gap, xx1 + gap, yy1 - gap);
-                            if (draw4thLine(a, b, xx2, yy2, xx2, yy2 - gap)) {
-                                break;
-                            }
-
-                            a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 - gap);
-                            b = searchIfPresent(linesLists, xx2, yy2 - gap, xx2 - gap, yy2 - gap);
-                            if (draw4thLine(a, b, xx1, yy1, xx1, yy1 - gap)) {
-                                break;
-                            }
-
-                            a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 + gap);
-                            b = searchIfPresent(linesLists, xx2, yy2 + gap, xx2 - gap, yy2 + gap);
-                            if (draw4thLine(a, b, xx1, yy1, xx1, yy1 + gap)) {
-                                break;
-                            }
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 - gap);
+                        b = searchIfPresent(linesLists, xx2, yy2 - gap, xx2 - gap, yy2 - gap);
+                        if (draw4thLine(a, b, xx1, yy1, xx1, yy1 - gap)) {
+                            break;
                         }
-                        else{
-                        float change ;
+
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 + gap);
+                        b = searchIfPresent(linesLists, xx2, yy2 + gap, xx2 - gap, yy2 + gap);
+                        if (draw4thLine(a, b, xx1, yy1, xx1, yy1 + gap)) {
+                            break;
+                        }
+                    } else {
+                        float change;
                         change = xx1;
                         xx1 = xx2;
                         xx2 = change;
@@ -1130,71 +1145,69 @@ public class MyDrawView extends View {
                         yy1 = yy2;
                         yy2 = change;
 
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1+gap);
-                        b = searchIfPresent(linesLists, xx1, yy1+gap, xx1 +gap, yy1+gap);
-                        if (draw4thLine(a, b, xx2, yy2 , xx2, yy2 + gap)){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 + gap);
+                        b = searchIfPresent(linesLists, xx1, yy1 + gap, xx1 + gap, yy1 + gap);
+                        if (draw4thLine(a, b, xx2, yy2, xx2, yy2 + gap)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1-gap);
-                        b = searchIfPresent(linesLists, xx1, yy1-gap, xx1 +gap, yy1-gap);
-                        if (draw4thLine(a, b, xx2, yy2 , xx2, yy2 - gap)){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 - gap);
+                        b = searchIfPresent(linesLists, xx1, yy1 - gap, xx1 + gap, yy1 - gap);
+                        if (draw4thLine(a, b, xx2, yy2, xx2, yy2 - gap)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2-gap);
-                        b = searchIfPresent(linesLists, xx2, yy2-gap, xx2 -gap, yy2-gap);
-                        if (draw4thLine(a, b, xx1, yy1 , xx1, yy1 - gap)){
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 - gap);
+                        b = searchIfPresent(linesLists, xx2, yy2 - gap, xx2 - gap, yy2 - gap);
+                        if (draw4thLine(a, b, xx1, yy1, xx1, yy1 - gap)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2+gap);
-                        b = searchIfPresent(linesLists, xx2, yy2+gap, xx2 -gap, yy2+gap);
-                        if (draw4thLine(a, b, xx1, yy1 , xx1, yy1 + gap)){
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2, yy2 + gap);
+                        b = searchIfPresent(linesLists, xx2, yy2 + gap, xx2 - gap, yy2 + gap);
+                        if (draw4thLine(a, b, xx1, yy1, xx1, yy1 + gap)) {
                             break;
-                        }}
+                        }
                     }
-                    else if(xx1==xx2){
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1+gap, yy1);
-                        b = searchIfPresent(linesLists, xx2, yy2, xx2+gap, yy2);
-                        if (draw4thLine(a, b,xx1+gap, yy1, xx2+gap, yy2)){
+                } else if (xx1 == xx2) {
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1 + gap, yy1);
+                    b = searchIfPresent(linesLists, xx2, yy2, xx2 + gap, yy2);
+                    if (draw4thLine(a, b, xx1 + gap, yy1, xx2 + gap, yy2)) {
+                        break;
+                    }
+
+                    a = searchIfPresent(linesLists, xx1, yy1, xx1 - gap, yy1);
+                    b = searchIfPresent(linesLists, xx2, yy2, xx2 - gap, yy2);
+                    if (draw4thLine(a, b, xx1 - gap, yy1, xx2 - gap, yy2)) {
+                        break;
+                    }
+
+                    if (yy1 < yy2) {
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1 + gap, yy1);
+                        b = searchIfPresent(linesLists, xx1 + gap, yy1, xx1 + gap, yy1 + gap);
+                        if (draw4thLine(a, b, xx2, yy2, xx2 + gap, yy2)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1-gap, yy1);
-                        b = searchIfPresent(linesLists, xx2, yy2, xx2-gap, yy2);
-                        if (draw4thLine(a, b,xx1-gap, yy1, xx2-gap, yy2)){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1 - gap, yy1);
+                        b = searchIfPresent(linesLists, xx1 - gap, yy1, xx1 - gap, yy1 + gap);
+                        if (draw4thLine(a, b, xx2, yy2, xx2 - gap, yy2)) {
                             break;
                         }
 
-                        if(yy1<yy2){
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1+gap, yy1);
-                        b = searchIfPresent(linesLists, xx1+gap, yy1, xx1+gap, yy1+gap);
-                        if (draw4thLine(a, b,xx2, yy2, xx2+gap, yy2)){
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2 + gap, yy2);
+                        b = searchIfPresent(linesLists, xx2 + gap, yy2, xx2 + gap, yy2 - gap); //fishy
+                        if (draw4thLine(a, b, xx1, yy1, xx1 + gap, yy1)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1-gap, yy1);
-                        b = searchIfPresent(linesLists, xx1-gap, yy1, xx1-gap, yy1+gap);
-                        if (draw4thLine(a, b,xx2, yy2, xx2-gap, yy2)){
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2 - gap, yy2);
+                        b = searchIfPresent(linesLists, xx2 - gap, yy2, xx2 - gap, yy2 - gap);
+                        if (draw4thLine(a, b, xx1, yy1, xx1 - gap, yy1)) {
                             break;
                         }
-
-                        a = searchIfPresent(linesLists, xx2, yy2, xx2+gap, yy2);
-                        b = searchIfPresent(linesLists, xx2+gap, yy2, xx2+gap, yy2-gap); //fishy
-                        if (draw4thLine(a, b,xx1, yy1, xx1+gap, yy1)){
-                            break;
-                        }
-
-                        a = searchIfPresent(linesLists, xx2, yy2, xx2-gap, yy2);
-                        b = searchIfPresent(linesLists, xx2-gap, yy2,xx2-gap, yy2-gap);
-                        if (draw4thLine(a, b,xx1, yy1, xx1-gap, yy1)){
-                            break;
-                        }}
-
-
-                        else{
-                        float change ;
+                    } else {
+                        float change;
                         change = xx1;
                         xx1 = xx2;
                         xx2 = change;
@@ -1202,33 +1215,46 @@ public class MyDrawView extends View {
                         yy1 = yy2;
                         yy2 = change;
 
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1+gap, yy1);
-                        b = searchIfPresent(linesLists, xx1+gap, yy1, xx1+gap, yy1+gap);
-                        if (draw4thLine(a, b,xx2, yy2, xx2+gap, yy2)){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1 + gap, yy1);
+                        b = searchIfPresent(linesLists, xx1 + gap, yy1, xx1 + gap, yy1 + gap);
+                        if (draw4thLine(a, b, xx2, yy2, xx2 + gap, yy2)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx1, yy1, xx1-gap, yy1);
-                        b = searchIfPresent(linesLists, xx1-gap, yy1, xx1-gap, yy1+gap);
-                        if (draw4thLine(a, b,xx2, yy2, xx2-gap, yy2)){
+                        a = searchIfPresent(linesLists, xx1, yy1, xx1 - gap, yy1);
+                        b = searchIfPresent(linesLists, xx1 - gap, yy1, xx1 - gap, yy1 + gap);
+                        if (draw4thLine(a, b, xx2, yy2, xx2 - gap, yy2)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx2, yy2, xx2+gap, yy2);
-                        b = searchIfPresent(linesLists, xx2+gap, yy2, xx2+gap, yy2-gap);
-                        if (draw4thLine(a, b,xx1, yy1, xx1+gap, yy1)){
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2 + gap, yy2);
+                        b = searchIfPresent(linesLists, xx2 + gap, yy2, xx2 + gap, yy2 - gap);
+                        if (draw4thLine(a, b, xx1, yy1, xx1 + gap, yy1)) {
                             break;
                         }
 
-                        a = searchIfPresent(linesLists, xx2, yy2, xx2-gap, yy2);
-                        b = searchIfPresent(linesLists, xx2-gap, yy2,xx2-gap, yy2-gap);
-                        if (draw4thLine(a, b,xx1, yy1, xx1-gap, yy1)){
+                        a = searchIfPresent(linesLists, xx2, yy2, xx2 - gap, yy2);
+                        b = searchIfPresent(linesLists, xx2 - gap, yy2, xx2 - gap, yy2 - gap);
+                        if (draw4thLine(a, b, xx1, yy1, xx1 - gap, yy1)) {
                             break;
-                        }}
-
+                        }
                     }
 
-                        selectRandomLine();
+                }
+
+                if (computerStreak < 1) {
+                    continueStreak = false;
+                } else {
+                    continueStreak = true;
+                }
+
+                if (continueStreak) {
+                    index = linesLists.size() - 1 - computerStreak;
+                    computerStreak = 0;
+                    //drawComputerLine();
+                } else{
+                    selectRandomLine();
+                }
                         break;
 
                 //}

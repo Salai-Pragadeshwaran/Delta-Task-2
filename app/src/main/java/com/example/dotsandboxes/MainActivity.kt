@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
                     MyDrawView.linesLists.clear()
                     MyDrawView.availableOptions.clear()
                     MyDrawView.gameOn = true
+                    MyDrawView.continueStreak = false
                 }
                 return true
             }
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity() {
                     MyDrawView.linesLists.clear()
                     MyDrawView.availableOptions.clear()
                     MyDrawView.gameOn = true
+                    MyDrawView.continueStreak = false
                 }
                 return true
             }
@@ -130,6 +132,7 @@ class MainActivity : AppCompatActivity() {
                 MyDrawView.singlePlayerMode = true
                 Toast.makeText(this, "Switched to Single Player Mode - difficulty level 1", Toast.LENGTH_SHORT).show()
                 MyDrawView.difficultyLevel = 1
+                MyDrawView.continueStreak = false
                 return true
             }
             R.id.level_2 -> {
@@ -142,6 +145,21 @@ class MainActivity : AppCompatActivity() {
                 MyDrawView.singlePlayerMode = true
                 Toast.makeText(this, "Switched to Single Player Mode - difficulty level 2", Toast.LENGTH_SHORT).show()
                 MyDrawView.difficultyLevel = 2
+                MyDrawView.continueStreak = false
+                return true
+            }
+
+            R.id.level_3 -> {
+                score3.visibility = View.GONE
+                score4.visibility = View.GONE
+                MyDrawView.linesLists.clear()
+                MyDrawView.availableOptions.clear()
+                MyDrawView.playerNumber = 2
+                MyDrawView.gameOn = true
+                MyDrawView.singlePlayerMode = true
+                Toast.makeText(this, "Switched to Single Player Mode - difficulty level 3", Toast.LENGTH_SHORT).show()
+                MyDrawView.difficultyLevel = 3
+                MyDrawView.continueStreak = false
                 return true
             }
 
