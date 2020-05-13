@@ -1012,7 +1012,12 @@ public class MyDrawView extends View {
             availableOptions.addAll(temporary);
             temporary.clear();
             Random random = new Random();
-            index = random.nextInt(availableOptions.size());
+            if(availableOptions.size()==0){
+                index = 0;
+            }
+            else {
+                index = random.nextInt(availableOptions.size());
+            }
         }
         else {
             availableOptions.addAll(temporary);
