@@ -40,7 +40,7 @@ public class MyDrawView extends View {
     public static int turnAnim ;
     public static int difficultyLevel = 2 ;
     int computerStreak = 0;
-    int index;
+    int index, turnMax;
     float canvasSize ;
     float dotRadius = 20 ;
     float gap ;
@@ -53,16 +53,18 @@ public class MyDrawView extends View {
     Paint lineB = new Paint();
     Paint lineC = new Paint();
     Paint lineD = new Paint();
+    Paint highlightLine = new Paint();
     Paint boxA = new Paint();
     Paint boxB = new Paint();
     Paint boxC = new Paint();
     Paint boxD = new Paint();
     public static boolean continueStreak = false;
+    int computerStreak2 = 0;
     boolean initialTouch = true ;
     boolean drawLine = false ;
     boolean skipOnce = false ; // to avoid the unwanted line
-    public static boolean computerTurn = false;
     public static boolean gameOn ;
+    public static boolean chainsFormed = true;
     MediaPlayer clickSound = MediaPlayer.create(getContext(), R.raw.click2);
     MediaPlayer boxSound = MediaPlayer.create(getContext(), R.raw.coin);
     MediaPlayer gameOverSound = MediaPlayer.create(getContext(), R.raw.powerup);
@@ -166,6 +168,11 @@ public class MyDrawView extends View {
             lineD.setStyle(Paint.Style.STROKE);
             lineD.setStrokeWidth(10);
 
+        highlightLine.setColor(getResources().getColor(R.color.greenHighlight));
+        highlightLine.isAntiAlias();
+        highlightLine.setStyle(Paint.Style.STROKE);
+        highlightLine.setStrokeWidth(10);
+
             boxD.setColor(getResources().getColor(R.color.boxD));
             boxD.isAntiAlias();
             boxD.setStyle(Paint.Style.FILL);
@@ -175,6 +182,7 @@ public class MyDrawView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         if(singlePlayerMode){
+        if (gameOn && (!intentTimerRunning)) {
             canvasSize = canvas.getHeight();
             gap = round(canvasSize / (n + 1));
             if(availableOptions.size()==0){
@@ -183,29 +191,36 @@ public class MyDrawView extends View {
             canvas.drawColor(getResources().getColor(R.color.canvasBg));
             drawAllLines(canvas, linesLists);
             drawDots(canvas);
+            checkIfGameOn();
+        } else if (!gameOn) {
+            gameOn = true;
+            displayWinner();
+        } else {
+            canvasSize = canvas.getHeight();
+            gap = round(canvasSize / (n + 1));
+            canvas.drawColor(getResources().getColor(R.color.canvasBg));
+            drawAllLines(canvas, linesLists);
+
+            drawDots(canvas);
+        }
         }
         else {
             if (gameOn && (!intentTimerRunning)) {
                 canvasSize = canvas.getHeight();
                 gap = round(canvasSize / (n + 1));
                 canvas.drawColor(getResources().getColor(R.color.canvasBg));
-                //drawTheLine(canvas);
                 drawAllLines(canvas, linesLists);
-                //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
 
                 drawDots(canvas);
                 checkIfGameOn();
             } else if (!gameOn) {
                 gameOn = true;
                 displayWinner();
-                //(new Handler()).postDelayed(this::displayWinner, 2000);
             } else {
                 canvasSize = canvas.getHeight();
                 gap = round(canvasSize / (n + 1));
                 canvas.drawColor(getResources().getColor(R.color.canvasBg));
-                //drawTheLine(canvas);
                 drawAllLines(canvas, linesLists);
-                //canvas.drawRect(centreX, centreY, centreX+30, centreY+30, lineA);
 
                 drawDots(canvas);
             }
@@ -222,7 +237,12 @@ public class MyDrawView extends View {
         }
         else if((scoreB>scoreA)&&(scoreB>scoreC)&&(scoreB>scoreD)){
             //B wins
-            intent.putExtra("WIN_MSG", "Congratulations\nPlayer B\nYou Win !");
+            if(singlePlayerMode){
+                intent.putExtra("WIN_MSG", "Computer Wins !");
+            }
+            else {
+                intent.putExtra("WIN_MSG", "Congratulations\nPlayer B\nYou Win !");
+            }
         }
         else if((scoreC>scoreB)&&(scoreC>scoreA)&&(scoreC>scoreD)){
             //C wins
@@ -294,7 +314,6 @@ public class MyDrawView extends View {
             c = searchIfPresent(linesLists, xx1 + gap, yy1 +gap, x1, yy1 +gap);
             if (a && b && c) {
                 // box on right
-                //Toast.makeText(getContext(), "right", Toast.LENGTH_SHORT).show();
                 dir = 3;
             }
             a = searchIfPresent(linesLists, xx1, yy1, xx1 - gap, yy1);
@@ -302,7 +321,6 @@ public class MyDrawView extends View {
             c = searchIfPresent(linesLists, xx1 - gap, yy1 + gap, xx1, yy1 +gap );
             if (a && b && c) {
                 // box on left
-                //Toast.makeText(getContext(), "left", Toast.LENGTH_SHORT).show();
                 if (dir == 3) {
                     dir = 39;
                 } else {
@@ -315,20 +333,16 @@ public class MyDrawView extends View {
             float yy1 = (xx1==x1)? y1 : y2;
             a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1-gap);
             b = searchIfPresent(linesLists, xx1, yy1 - gap, xx1+gap, yy1-gap);
-            //d = searchIfPresent(linesLists, x1, y1 - gap, x1-gap, y1-gap);
             c = searchIfPresent(linesLists, xx1 + gap, yy1 - gap, xx1 + gap, yy1);
             if (a && b && c) {
                 // box on top
-                //Toast.makeText(getContext(), "top", Toast.LENGTH_SHORT).show();
                 dir = 12;
             }
             a = searchIfPresent(linesLists, xx1, yy1, xx1, yy1 +gap);
             b = searchIfPresent(linesLists, xx1, yy1+gap, xx1+gap, yy1+gap);
-           // d = searchIfPresent(linesLists, x1, y1 + gap, x1-gap, y1+gap);
             c = searchIfPresent(linesLists, xx1+gap, yy1 + gap, xx1 + gap, yy1);
             if (a && b && c) {
                 // box on bottom
-                //Toast.makeText(getContext(), "bottom", Toast.LENGTH_SHORT).show();
                 if (dir == 12) {
                     dir = 612;
                 }
@@ -345,6 +359,7 @@ public class MyDrawView extends View {
         drawLine = false;
         centreX = 0;
         skipOnce = true;
+        computerStreak2 = 0;
         if(singlePlayerMode){
             makeComputerMove();
         }
@@ -631,6 +646,12 @@ public class MyDrawView extends View {
             }
         }
 
+        if(turn>turnMax) {
+            turnMax = turn;
+        }
+        if(linesList.size()==0){
+            turnMax = 0;
+        }
     }
 
     private void checkIfGameOn(){
@@ -758,6 +779,9 @@ public class MyDrawView extends View {
     }
 
     public Paint linePaint(int turn){
+        if(((turn+1)==turnMax)&&(singlePlayerMode)){
+            return highlightLine;
+        }
         switch(turn%playerNumber){
             case 0: {
                 return lineA;
@@ -1009,6 +1033,7 @@ public class MyDrawView extends View {
             return index;
         }
         if(availableOptions.size()==0){
+            chainsFormed = true;
             availableOptions.addAll(temporary);
             temporary.clear();
             Random random = new Random();
@@ -1039,7 +1064,20 @@ public class MyDrawView extends View {
             else{
                 index = 0;
             }
-            index = checkIf3rdLine(temporary);
+            if(!chainsFormed) {
+                index = checkIf3rdLine(temporary);
+            }
+            else{
+                if((computerStreak2>5)&&(availableOptions.size()>3)&&(computerStreak==0)&&(difficultyLevel>3)){
+                    temporary.add(linesLists.get(linesLists.size()-1));
+                    linesLists.remove(linesLists.size()-1);
+                    linesLists.remove(linesLists.size()-1);
+                    linesLists.add(new LinesList(temporary.get(0).getX1(), temporary.get(0).getY1(), temporary.get(0).getX2(), temporary.get(0).getY2(), 0));
+                    temporary.clear();
+                    computerStreak2 = 0;
+                    return;
+                }
+            }
             }
 
 
@@ -1053,6 +1091,7 @@ public class MyDrawView extends View {
                 , checkBox(availableOptions.get(index).getX1(), availableOptions.get(index).getY1(),
                 availableOptions.get(index).getX2(), availableOptions.get(index).getY2())));
         availableOptions.remove(index);
+        computerStreak2++;
         availableOptions.addAll(temporary);
         temporary.clear();
     }
@@ -1070,6 +1109,7 @@ public class MyDrawView extends View {
     private boolean draw4thLine(boolean a, boolean b, float xx1, float yy1, float xx2, float yy2) {
         if (a && b && (searchIfPresent(availableOptions, xx1, yy1, xx2, yy2)) && (!searchIfPresent(linesLists, xx1, yy1, xx2, yy2))) {
             linesLists.add(new LinesList(xx1, yy1, xx2, yy2, checkBox(xx1,yy1,xx2,yy2)));
+            computerStreak2++;
             index = searchIfPresentInAvailableOptions(availableOptions, linesLists.get(linesLists.size() - 1));
             availableOptions.remove(index);
 
@@ -1088,11 +1128,10 @@ public class MyDrawView extends View {
                 break;
             }
             case 3:
+            case 4:
             case 2: {
-                //if(linesLists.get(linesLists.size()-1).getDirection()==0){
                 float xx1, yy1, xx2, yy2;
                 boolean a, b;
-                //int index;
                 xx1 = linesLists.get(linesLists.size() - 1).getX1();
                 yy1 = linesLists.get(linesLists.size() - 1).getY1();
                 xx2 = linesLists.get(linesLists.size() - 1).getX2();
@@ -1256,13 +1295,12 @@ public class MyDrawView extends View {
                 if (continueStreak) {
                     index = linesLists.size() - 1 - computerStreak;
                     computerStreak = 0;
-                    //drawComputerLine();
                 } else{
                     selectRandomLine();
+                    //if chains are formed ask computer to check for locations where squares can be formed
                 }
                         break;
 
-                //}
             }
             default:{
                 selectRandomLine();

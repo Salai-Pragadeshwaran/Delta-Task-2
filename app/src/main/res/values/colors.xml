@@ -13,4 +13,5 @@
     <color name="boxB">#558B2F</color>
     <color name="boxC">#B71C1C</color>
     <color name="boxD">#4A148C</color>
+    <color name="greenHighlight">#AEEA00</color>
 </resources>

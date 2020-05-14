@@ -28,8 +28,7 @@ class MainActivity : AppCompatActivity() {
         score4.visibility = View.GONE
 
         fab.setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                .setAction("Action", null).show()
+
            var size =  MyDrawView.linesLists.size
             if(size>0) {
                 if((MyDrawView.singlePlayerMode)&&(MyDrawView.linesLists[size-1].direction!=0)){
@@ -71,7 +70,10 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings ->{
 
                 MyDrawView.linesLists.clear()
-
+                MyDrawView.availableOptions.clear()
+                MyDrawView.chainsFormed = false
+                MyDrawView.continueStreak = false
+                MyDrawView.gameOn = true
                 return true
             }
 
@@ -82,6 +84,7 @@ class MainActivity : AppCompatActivity() {
                     MyDrawView.availableOptions.clear()
                     MyDrawView.gameOn = true
                     MyDrawView.continueStreak = false
+                    MyDrawView.chainsFormed = false
                 }
                 return true
             }
@@ -92,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                     MyDrawView.availableOptions.clear()
                     MyDrawView.gameOn = true
                     MyDrawView.continueStreak = false
+                    MyDrawView.chainsFormed = false
                 }
                 return true
             }
@@ -133,6 +137,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Switched to Single Player Mode - difficulty level 1", Toast.LENGTH_SHORT).show()
                 MyDrawView.difficultyLevel = 1
                 MyDrawView.continueStreak = false
+                MyDrawView.chainsFormed = false
                 return true
             }
             R.id.level_2 -> {
@@ -146,6 +151,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Switched to Single Player Mode - difficulty level 2", Toast.LENGTH_SHORT).show()
                 MyDrawView.difficultyLevel = 2
                 MyDrawView.continueStreak = false
+                MyDrawView.chainsFormed = false
                 return true
             }
 
@@ -160,6 +166,22 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Switched to Single Player Mode - difficulty level 3", Toast.LENGTH_SHORT).show()
                 MyDrawView.difficultyLevel = 3
                 MyDrawView.continueStreak = false
+                MyDrawView.chainsFormed = false
+                return true
+            }
+
+            R.id.level_4 -> {
+                score3.visibility = View.GONE
+                score4.visibility = View.GONE
+                MyDrawView.linesLists.clear()
+                MyDrawView.availableOptions.clear()
+                MyDrawView.playerNumber = 2
+                MyDrawView.gameOn = true
+                MyDrawView.singlePlayerMode = true
+                Toast.makeText(this, "Switched to Single Player Mode - difficulty level 4", Toast.LENGTH_SHORT).show()
+                MyDrawView.difficultyLevel = 4
+                MyDrawView.continueStreak = false
+                MyDrawView.chainsFormed = false
                 return true
             }
 

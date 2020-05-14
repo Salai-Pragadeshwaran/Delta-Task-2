@@ -1,6 +1,6 @@
 package com.example.dotsandboxes
 
-import android.content.Intent
+
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,7 +19,7 @@ class WinnerActivity : AppCompatActivity() {
         }
         else{
             var winSound = MediaPlayer.create(this, R.raw.game_over_sound)
-            winSound.start();
+            winSound.start()
         }
             winMsg.text = msg
             Handler().postDelayed({
